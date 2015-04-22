@@ -29,7 +29,9 @@ self: super: {
   template-haskell = null;
   time = null;
   unix = null;
-  xhtml = null;
+
+  # xhtml is not a core library for this compiler.
+  xhtml = self.xhtml_3000_2_1;
 
   # transformers is not a core library for this compiler.
   transformers = self.transformers_0_4_3_0;
