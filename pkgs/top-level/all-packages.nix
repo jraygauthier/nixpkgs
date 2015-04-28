@@ -13385,9 +13385,17 @@ let
 
   beep = callPackage ../misc/beep { };
 
+  brgenml1lpr = callPackage ../misc/cups/drivers/brgenml1lpr {};
+
+  brgenml1cupswrapper = callPackage ../misc/cups/drivers/brgenml1cupswrapper {};
+
+  brmfc7860dwcups = callPackage ../misc/cups/drivers/brmfc7860dwcups {};
+
   cups = callPackage ../misc/cups { libusb = libusb1; };
 
   cups_filters = callPackage ../misc/cups/filters.nix { };
+
+  cupswrapperMFC7860DW = callPackage ../misc/cups/drivers/cupswrapperMFC7860DW {};
 
   crashplan = callPackage ../applications/backup/crashplan { };
 
@@ -13479,6 +13487,8 @@ let
   mess = callPackage ../misc/emulators/mess {
     inherit (pkgs.gnome) GConf;
   };
+
+  mfc7860dwlpr = callPackage ../misc/cups/drivers/mfc7860dwlpr {};
 
   mupen64plus = callPackage ../misc/emulators/mupen64plus { };
 
