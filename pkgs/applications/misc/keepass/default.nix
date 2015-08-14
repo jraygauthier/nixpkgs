@@ -1,4 +1,4 @@
-{ stdenv, fetchurl, unzip, makeDesktopItem, mono }:
+{ stdenv, fetchurl, unzip, icoutils, makeDesktopItem, mono }:
 
 stdenv.mkDerivation rec {
   name = "keepass-${version}";
@@ -17,23 +17,43 @@ stdenv.mkDerivation rec {
     name = "keepass";
     exec = "keepass";
     comment = "Password manager";
+    icon = "keepass";
     desktopName = "Keepass";
-    genericName = "Password manager";    
-    categories = "Application;Other;";
+    genericName = "Password manager";
+    type = "Application";
+    categories = "Application;Utility;";
+    mimeType = stdenv.lib.concatStringsSep ";" [
+      "application/x-keepass2"
+      ""
+    ];
   };
 
 
-  installPhase = ''
+  installPhase =
+  let
+    extractFDeskIcons=./extractWinRscIconsToStdFreeDesktopDir.sh;
+  in
+  ''
     mkdir -p "$out/bin"
-    echo "${mono}/bin/mono $out/KeePass.exe" > $out/bin/keepass
+    echo "${mono}/bin/mono $out/share/keepass/KeePass.exe" > $out/bin/keepass
     chmod +x $out/bin/keepass
     echo $out
-    cp -r ./* $out/
+    mkdir -p $out/share/keepass
+    cp -r ./* $out/share/keepass
     mkdir -p "$out/share/applications"
     cp ${desktopItem}/share/applications/* $out/share/applications
+
+    ${extractFDeskIcons} \
+    "./KeePass.exe" \
+    '[^\.]+\.exe_[0-9]+_[0-9]+_[0-9]+_[0-9]+_([0-9]+x[0-9]+)x[0-9]+\.png' \
+    '\1' \
+    '([^\.]+)\.exe.+' \
+    'keepass' \
+    "$out" \
+    "./tmp"
   '';
 
-  buildInputs = [ unzip ];
+  buildInputs = [ unzip icoutils ];
 
   meta = {
     description = "GUI password manager with strong cryptography";
