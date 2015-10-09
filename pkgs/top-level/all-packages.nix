@@ -257,6 +257,7 @@ let
 
   buildEnv = import ../build-support/buildenv {
     inherit (pkgs) runCommand perl;
+    inherit lib;
   };
 
   buildFHSChrootEnv = import ../build-support/build-fhs-chrootenv {
