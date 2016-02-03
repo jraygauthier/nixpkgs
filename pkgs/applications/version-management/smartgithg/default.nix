@@ -8,11 +8,11 @@
 
 stdenv.mkDerivation rec {
   name = "smartgithg-${version}";
-  version = "7_0_2";
+  version = "7_0_5";
 
   src = fetchurl {
     url = "http://www.syntevo.com/downloads/smartgit/smartgit-generic-${version}.tar.gz";
-    sha256 = "1jpi424aqy6niq31j750rgbspwii013c8kbi965i4jzjpba1pagi";
+    sha256 = "1xrpkxqs2xa0znx6lr9fdfwns44cnvlpfs7wxyqxdbx1qb7638yh";
   };
 
   buildInputs = [
