@@ -92,6 +92,7 @@ in buildEnv {
         -e 's,selfautoparent:texmf-config,selfautoparent:texmf,g' \
         -e 's,selfautoparent:texmf-fonts,selfautoparent:texmf,g' \
         -e 's,selfautoparent:texmf-project,selfautoparent:texmf,g' \
+        -e "s,\(TEXMFLOCAL[ ]*=[ ]*\)[^\,]*,\1\"$out/share/texmf\",g" \
         -e "s,\$SELFAUTOLOC,$out,g" \
         -e "s,selfautodir:/,$out/share/,g" \
         -e "s,selfautodir:,$out/share/,g" \
