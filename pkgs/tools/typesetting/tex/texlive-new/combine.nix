@@ -63,6 +63,9 @@ in buildEnv {
     export TEXMFCNF="$out/share/texmf/web2c"
     export TEXMFDIST="$out/share/texmf"
     export TEXMFSYSCONFIG="$out/share/texmf-config"
+    if [[ ! -d  "$TEXMFSYSCONFIG" ]]; then
+      export TEXMFSYSCONFIG="$out/share/texmf"
+    fi
     export TEXMFSYSVAR="$out/share/texmf-var"
     export PERL5LIB="$out/share/texmf/scripts/texlive"
   '' +
@@ -110,11 +113,17 @@ in buildEnv {
 
       echo -n "Wrapping '$link'"
       rm "$link"
+
+      local sysConfigDir="$out/share/texmf-config"
+      if [[ ! -d  "$sysConfigDir" ]]; then
+        sysConfigDir="$out/share/texmf"
+      fi
+
       makeWrapper "$target" "$link" \
         --prefix PATH : "$out/bin:${perl}/bin" \
         --set TEXMFCNF "$out/share/texmf/web2c" \
         --set TEXMFDIST "$out/share/texmf" \
-        --set TEXMFSYSCONFIG "$out/share/texmf-config" \
+        --set TEXMFSYSCONFIG "$sysConfigDir" \
         --set TEXMFSYSVAR "$out/share/texmf-var" \
         --prefix PERL5LIB : "$out/share/texmf/scripts/texlive"
 
