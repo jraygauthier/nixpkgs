@@ -77,6 +77,7 @@ in buildEnv {
       sed \
         -e 's,texmf-dist,texmf,g' \
         -e 's,texmf-local,texmf,g' \
+        -e 's,TEXMFROOT/texmf-config,TEXMFROOT/texmf,g' \
         -e "s,\$SELFAUTOLOC,$out,g" \
         -e "s,\$SELFAUTODIR,$out/share,g" \
         -e "s,\$SELFAUTOPARENT,$out/share,g" \
@@ -88,6 +89,9 @@ in buildEnv {
       sed \
         -e 's,texmf-dist,texmf,g' \
         -e 's,texmf-local,texmf,g' \
+        -e 's,selfautoparent:texmf-config,selfautoparent:texmf,g' \
+        -e 's,selfautoparent:texmf-fonts,selfautoparent:texmf,g' \
+        -e 's,selfautoparent:texmf-project,selfautoparent:texmf,g' \
         -e "s,\$SELFAUTOLOC,$out,g" \
         -e "s,selfautodir:/,$out/share/,g" \
         -e "s,selfautodir:,$out/share/,g" \
