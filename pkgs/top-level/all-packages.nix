@@ -16087,6 +16087,8 @@ let
     snapscanFirmware = config.sane.snapscanFirmware or null;
   };
 
+  brscan4 = callPackage ../applications/graphics/sane/backends/brscan4 { };
+
   mkSaneConfig = callPackage ../applications/graphics/sane/config.nix { };
 
   sane-frontends = callPackage ../applications/graphics/sane/frontends.nix { };
