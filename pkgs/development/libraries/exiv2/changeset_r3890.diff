@@ -1,0 +1,12 @@
+Index: makernote.cpp
+===================================================================
+--- makernote.cpp	(revision 3889)
++++ makernote.cpp	(revision 3890)
+@@ -80,6 +80,7 @@
+         { "-",              olympus2Id,  0,              newOlympus2Mn2  },
+         { "-",              pentaxId,    0,              newPentaxMn2    },
+         { "-",              pentaxDngId, 0,              newPentaxDngMn2 },
++        { "-",              casioId,     0,              newIfdMn2       },
+         { "-",              casio2Id,    0,              newCasio2Mn2    }
+     };
+ 
