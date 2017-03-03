@@ -11,10 +11,18 @@ let
 
 in stdenv.mkDerivation rec {
   name = "brscan4-0.4.3-3";
-  src = fetchurl {
-    url = "http://download.brother.com/welcome/dlf006645/${name}.amd64.deb";
-    sha256 = "1nccyjl0b195pn6ya4q0zijb075q8r31v9z9a0hfzipfyvcj57n2";
-  };
+  src = 
+    if stdenv.system == "i686-linux" then
+      fetchurl {
+        url = "http://download.brother.com/welcome/dlf006646/${name}.i386.deb";
+        sha256 = "09979abdh1dfi1w85ahsaf2igbgn20mvwr8z7nmkpyx8hcjxb6bg";
+      }
+    else if stdenv.system == "x86_64-linux" then
+      fetchurl {
+        url = "http://download.brother.com/welcome/dlf006645/${name}.amd64.deb";
+        sha256 = "1nccyjl0b195pn6ya4q0zijb075q8r31v9z9a0hfzipfyvcj57n2";
+      }
+    else throw "${name} is not supported on ${stdenv.system} (only i686-linux and x86_64 linux are supported)";
 
   unpackPhase = ''
     ar x $src
@@ -36,12 +44,12 @@ in stdenv.mkDerivation rec {
     done
   '';
 
-  installPhase = ''
+  installPhase = with stdenv.lib; ''
     PATH_TO_BRSCAN4="opt/brother/scanner/brscan4"
     mkdir -p $out/$PATH_TO_BRSCAN4
     cp -rp $PATH_TO_BRSCAN4/* $out/$PATH_TO_BRSCAN4
     mkdir -p $out/lib/sane
-    cp -rp usr/lib64/sane/* $out/lib/sane
+    cp -rp usr/lib${optionalString stdenv.is64bit "64"}/sane/* $out/lib/sane
 
     # Symbolic links were absolute. Fix them so that they point to $out.
     pushd "$out/lib/sane" > /dev/null
