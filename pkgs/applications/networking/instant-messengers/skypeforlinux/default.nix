@@ -1,6 +1,6 @@
 { stdenv, fetchurl, dpkg, makeWrapper
-, alsaLib, atk, cairo, cups, curl, dbus, expat, fontconfig, freetype, glib, gnome2
-, libnotify, libpulseaudio, libsecret, libv4l, nspr, nss, systemd, xorg }:
+, alsaLib, atk, cairo, cups, curl, dbus, expat, fontconfig, freetype, glib, glibc, gnome2
+, libnotify, libpulseaudio, libsecret, libstdcxx5, libv4l, nspr, nss, systemd, xorg }:
 
 let
 
@@ -17,6 +17,8 @@ let
     fontconfig
     freetype
     glib
+    glibc
+    libsecret
 
     gnome2.GConf
     gnome2.gdk_pixbuf
@@ -27,11 +29,12 @@ let
 
     libnotify
     libpulseaudio
-    libv4l.out
     nspr
     nss
     stdenv.cc.cc
     systemd
+    libstdcxx5
+    libv4l
 
     xorg.libxkbfile
     xorg.libX11
@@ -79,17 +82,12 @@ in stdenv.mkDerivation {
   '';
 
   postFixup = ''
-     patchelf \
-      --set-interpreter "$(cat $NIX_CC/nix-support/dynamic-linker)" \
-      --set-rpath "$out/share/skypeforlinux:${rpath}" "$out/share/skypeforlinux/skypeforlinux"
+    for file in $(find $out -type f \( -perm /0111 -o -name \*.so\* -or -name \*.node\* \) ); do
+      patchelf --set-interpreter "$(cat $NIX_CC/nix-support/dynamic-linker)" "$file" || true
+      patchelf --set-rpath ${rpath}:$out/share/skypeforlinux $file || true
+    done
 
-    #
-    # Fix the dynamic load of 'libsecret'.
-    # Fix the `STARTUP_LOAD_ERROR` after login by preloading the v4l1 compatibility lib.
-    #
-    makeWrapper "$out/share/skypeforlinux/skypeforlinux" "$out/bin/skypeforlinux" \
-      --prefix LD_LIBRARY_PATH : "${libsecret.out}/lib" \
-      --prefix LD_PRELOAD : "${libv4l.out}/lib/v4l1compat.so"
+    ln -s "$out/share/skypeforlinux/skypeforlinux" "$out/bin/skypeforlinux"
 
     # Fix the desktop link
     substituteInPlace $out/share/applications/skypeforlinux.desktop \
