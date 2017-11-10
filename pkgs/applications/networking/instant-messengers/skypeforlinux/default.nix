@@ -1,10 +1,10 @@
 { stdenv, fetchurl, dpkg, makeWrapper
 , alsaLib, atk, cairo, cups, curl, dbus, expat, fontconfig, freetype, glib, gnome2
-, libnotify, nspr, nss, systemd, xorg }:
+, libnotify, libpulseaudio, libsecret, libv4l, nspr, nss, systemd, xorg }:
 
 let
 
-  version = "5.3.0.1";
+  version = "8.10.76.7";
 
   rpath = stdenv.lib.makeLibraryPath [
     alsaLib
@@ -26,6 +26,8 @@ let
     gnome2.gnome_keyring
 
     libnotify
+    libpulseaudio
+    libv4l.out
     nspr
     nss
     stdenv.cc.cc
@@ -50,7 +52,7 @@ let
     if stdenv.system == "x86_64-linux" then
       fetchurl {
         url = "https://repo.skype.com/deb/pool/main/s/skypeforlinux/skypeforlinux_${version}_amd64.deb";
-        sha256 = "08sf9nqnznsydw4965w7ixwwba54hjc02ga7vcnz9vpx5hln3nrz";
+        sha256 = "1nh0rcglslgl3wwlbkrak3p9db9jrjw89br6fi4g4mcb81bcjb0q";
       }
     else
       throw "Skype for linux is not supported on ${stdenv.system}";
@@ -81,20 +83,25 @@ in stdenv.mkDerivation {
       --set-interpreter "$(cat $NIX_CC/nix-support/dynamic-linker)" \
       --set-rpath "$out/share/skypeforlinux:${rpath}" "$out/share/skypeforlinux/skypeforlinux"
 
-    ln -s "$out/share/skypeforlinux/skypeforlinux" "$out/bin/skypeforlinux"
+    #
+    # Fix the dynamic load of 'libsecret'.
+    # Fix the `STARTUP_LOAD_ERROR` after login by preloading the v4l1 compatibility lib.
+    #
+    makeWrapper "$out/share/skypeforlinux/skypeforlinux" "$out/bin/skypeforlinux" \
+      --prefix LD_LIBRARY_PATH : "${libsecret.out}/lib" \
+      --prefix LD_PRELOAD : "${libv4l.out}/lib/v4l1compat.so"
 
     # Fix the desktop link
     substituteInPlace $out/share/applications/skypeforlinux.desktop \
       --replace /usr/bin/ $out/bin/ \
       --replace /usr/share/ $out/share/
-
   '';
 
   meta = with stdenv.lib; {
     description = "Linux client for skype";
     homepage = https://www.skype.com;
     license = licenses.unfree;
-    maintainers = with stdenv.lib.maintainers; [ panaeon ];
+    maintainers = with stdenv.lib.maintainers; [ panaeon jraygauthier ];
     platforms = [ "x86_64-linux" ];
   };
 }
