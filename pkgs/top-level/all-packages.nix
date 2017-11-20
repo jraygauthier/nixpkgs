@@ -12735,6 +12735,8 @@ with pkgs;
 
   tiptop = callPackage ../os-specific/linux/tiptop { };
 
+  tiscamera = callPackage ../os-specific/linux/tiscamera { };
+
   tpacpi-bat = callPackage ../os-specific/linux/tpacpi-bat { };
 
   trinity = callPackage ../os-specific/linux/trinity { };
