@@ -39,10 +39,14 @@ stdenv.mkDerivation rec {
     gtk3 libX11 libXext libXi libXtst pango python3Packages.python xorgserver
   ];
 
+  patchPhase = ''
+    substituteInPlace python/geis/geis_v2.py --replace \
+      "ctypes.util.find_library(\"geis\")" "'$out/lib/libgeis.so'"
+  '';
+
   preFixup = ''
     buildPythonPath "$out $pythonPath"
-    gappsWrapperArgs+=(--prefix PYTHONPATH : "$program_PYTHONPATH")
-    gappsWrapperArgs+=(--prefix LD_LIBRARY_PATH : "$out/lib")
+    gappsWrapperArgs+=(--set PYTHONPATH "$program_PYTHONPATH")
   '';
 
   meta = {
