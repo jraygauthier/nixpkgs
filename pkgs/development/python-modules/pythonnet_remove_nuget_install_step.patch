@@ -1,0 +1,13 @@
+diff --git a/setup.py b/setup.py
+index b85e2c8..d0a23f4 100644
+--- a/setup.py
++++ b/setup.py
+@@ -136,7 +136,7 @@ class BuildExtPythonnet(build_ext.build_ext):
+             return build_ext.build_ext.build_extension(self, ext)
+ 
+         # install packages using nuget
+-        self._install_packages()
++        #self._install_packages()
+ 
+         dest_file = self.get_ext_fullpath(ext.name)
+         dest_dir = os.path.dirname(dest_file)

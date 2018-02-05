@@ -19149,6 +19149,67 @@ in {
   };
 
 
+  pythonnet = buildPythonPackage rec {
+    name = "pythonnet-${version}";
+    version = "2.3.0";
+
+
+    src = pkgs.fetchurl {
+      url = "mirror://pypi/p/pythonnet/${name}.tar.gz";
+      sha256 = "1hxnkrfj8ark9sbamcxzd63p98vgljfvdwh79qj3ac8pqrgghq80";
+    };
+
+    patches = [ ../development/python-modules/pythonnet_remove_nuget_install_step.patch ];
+
+    preConfigure = ''
+      [ -z "$dontPlacateNuget" ] && placate-nuget.sh
+      [ -z "$dontPlacatePaket" ] && placate-paket.sh
+    '';
+
+    UnmanagedExports127 = pkgs.fetchNuGet {
+      baseName = "UnmanagedExports";
+      version = "1.2.7";
+      sha256 = "0bfrhpmq556p0swd9ssapw4f2aafmgp930jgf00sy89hzg2bfijf";
+      outputFiles = [ "*" ];
+    };
+    NUnit360 = pkgs.fetchNuGet {
+      baseName = "NUnit";
+      version = "3.6.0";
+      sha256 = "0wz4sb0hxlajdr09r22kcy9ya79lka71w0k1jv5q2qj3d6g2frz1";
+      outputFiles = [ "*" ];
+    };
+
+    buildInputs = with self; [
+      # `import clr` will crash with default `mono` which maps to `mono40`.      
+      pkgs.mono46
+      pkgs.pkgconfig
+      pkgs.dotnetbuildhelpers
+      pkgs.clang
+      UnmanagedExports127
+      NUnit360
+      pycparser
+      pytest
+    ];
+
+    preBuild = ''
+      rm -rf packages
+      mkdir packages
+
+      ln -s ${NUnit360}/lib/dotnet/NUnit/ packages/NUnit.3.6.0
+      ln -s ${UnmanagedExports127}/lib/dotnet/NUnit/ packages/UnmanagedExports.1.2.7    
+    '';
+
+    checkPhase = ''
+      ${python.interpreter} -m pytest
+    '';
+
+    meta = {
+      description = ".Net and Mono integration for Python";
+      homepage = https://pythonnet.github.io;
+      license = licenses.mit;
+    };
+  };
+
   pytz = buildPythonPackage rec {
     name = "pytz-${version}";
     version = "2016.6.1";
