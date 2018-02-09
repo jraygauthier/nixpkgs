@@ -31,12 +31,15 @@ stdenv.mkDerivation rec {
 
   NIX_CFLAGS_COMPILE = "-Wno-format -Wno-misleading-indentation -Wno-error";
 
-  pythonPath = with python3Packages;
-    [ pygobject3  ];
+  pythonWithPackages = python3Packages.python.withPackages (pp: with pp; [ 
+    pygobject3  
+  ]);
 
-  nativeBuildInputs = [ pkgconfig wrapGAppsHook python3Packages.wrapPython];
+  nativeBuildInputs = [ pkgconfig wrapGAppsHook ];
+
   buildInputs = [ atk dbus_libs evemu frame gdk_pixbuf gobjectIntrospection grail
-    gtk3 libX11 libXext libXi libXtst pango python3Packages.python xorgserver
+    gtk3 libX11 libXext libXi libXtst pango pythonWithPackages xorgserver
+    python3Packages.wrapPython
   ];
 
   patchPhase = ''
@@ -45,8 +48,7 @@ stdenv.mkDerivation rec {
   '';
 
   preFixup = ''
-    buildPythonPath "$out $pythonPath"
-    gappsWrapperArgs+=(--set PYTHONPATH "$program_PYTHONPATH")
+    gappsWrapperArgs+=(--set PYTHONPATH "$(toPythonPath $out)")
   '';
 
   meta = {
