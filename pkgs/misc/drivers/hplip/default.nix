@@ -2,7 +2,7 @@
 , pkgconfig
 , makeWrapper
 , cups, zlib, libjpeg, libusb1, pythonPackages, sane-backends, dbus, usbutils
-, net_snmp, openssl, polkit, nettools
+, gnupg, net_snmp, openssl, polkit, nettools
 , bash, coreutils, utillinux
 , qtSupport ? true
 , withPlugin ? false
@@ -61,6 +61,8 @@ pythonPackages.buildPythonApplication {
 
   nativeBuildInputs = [
     pkgconfig
+    nettools
+    gnupg
   ];
 
   pythonPath = with pythonPackages; [
@@ -73,7 +75,7 @@ pythonPackages.buildPythonApplication {
     pyqt4
   ];
 
-  makeWrapperArgs = [ ''--prefix PATH : "${nettools}/bin"'' ];
+  makeWrapperArgs = [ "--prefix PATH : ${nettools}/bin:${gnupg}/bin" ];
 
   prePatch = ''
     # HPLIP hardcodes absolute paths everywhere. Nuke from orbit.
@@ -111,6 +113,10 @@ pythonPackages.buildPythonApplication {
 
   enableParallelBuilding = true;
 
+  #
+  # Running `hp-diagnose_plugin -g` can be used to diagnose
+  # issues with plugins.
+  #
   postInstall = stdenv.lib.optionalString withPlugin ''
     sh ${plugin} --noexec --keep
     cd plugin_tmp
@@ -126,15 +132,25 @@ pythonPackages.buildPythonApplication {
     mkdir -p $out/share/hplip/prnt/plugins
     for plugin in lj hbpl1; do
       cp $plugin-${hplipArch}.so $out/share/hplip/prnt/plugins
+      chmod 0755 $out/share/hplip/prnt/plugins/$plugin-${hplipArch}.so
       ln -s $out/share/hplip/prnt/plugins/$plugin-${hplipArch}.so \
         $out/share/hplip/prnt/plugins/$plugin.so
     done
 
     mkdir -p $out/share/hplip/scan/plugins
-    for plugin in bb_soap bb_marvell bb_soapht fax_marvell; do
+    for plugin in bb_soap bb_marvell bb_soapht bb_escl; do
       cp $plugin-${hplipArch}.so $out/share/hplip/scan/plugins
+      chmod 0755 $out/share/hplip/scan/plugins/$plugin-${hplipArch}.so
       ln -s $out/share/hplip/scan/plugins/$plugin-${hplipArch}.so \
         $out/share/hplip/scan/plugins/$plugin.so
+    done
+
+    mkdir -p $out/share/hplip/fax/plugins
+    for plugin in fax_marvell; do
+      cp $plugin-${hplipArch}.so $out/share/hplip/fax/plugins
+      chmod 0755 $out/share/hplip/fax/plugins/$plugin-${hplipArch}.so
+      ln -s $out/share/hplip/fax/plugins/$plugin-${hplipArch}.so \
+        $out/share/hplip/fax/plugins/$plugin.so
     done
 
     mkdir -p $out/var/lib/hp
