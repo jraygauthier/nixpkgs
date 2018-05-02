@@ -1,9 +1,9 @@
 { stdenv, lib, vscode-utils
 
-, pythonUseFixed ? false, python  # When `true`, the python default setting will be fixed to specified. 
+, pythonUseFixed ? false, python  # When `true`, the python default setting will be fixed to specified.
                                   # Use version from `PATH` for default setting otherwise.
                                   # Defaults to `false` as we expect it to be project specific most of the time.
-, ctagsUseFixed ? true, ctags     # When `true`, the ctags default setting will be fixed to specified. 
+, ctagsUseFixed ? true, ctags     # When `true`, the ctags default setting will be fixed to specified.
                                   # Use version from `PATH` for default setting otherwise.
                                   # Defaults to `true` as usually not defined on a per projet basis.
 }:
@@ -20,8 +20,8 @@ vscode-utils.buildVscodeMarketplaceExtension {
   mktplcRef = {
     name = "python";
     publisher = "ms-python";
-    version = "0.8.0";
-    sha256 = "0i7s93l5g5lyi6vn77zh3ipj0p267y17fayv6vjrxc2igrs27ik6";
+    version = "2018.4.0";
+    sha256 = "0vby1dixz9m1ys3xq0ndq1h5fhv52yycc92d46lk2fwskqan9smp";
   };
 
   postPatch = ''
