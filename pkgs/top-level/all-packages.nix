@@ -3479,6 +3479,8 @@ with pkgs;
 
   lzma = xz;
 
+  luxcorerender = callPackage ../tools/graphics/luxcorerender { };
+
   xz = callPackage ../tools/compression/xz { };
 
   lz4 = callPackage ../tools/compression/lz4 { };
@@ -12514,11 +12516,9 @@ with pkgs;
   };
 
   pulseaudioFull = callPackage ../servers/pulseaudio {
-    gconf = gnome3.gconf;
     x11Support = true;
     jackaudioSupport = true;
     airtunesSupport = true;
-    gconfSupport = true;
     bluetoothSupport = true;
     remoteControlSupport = true;
     zeroconfSupport = true;
