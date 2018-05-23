@@ -1022,6 +1022,24 @@ self: super: {
   # https://github.com/dmwit/encoding/pull/3
   encoding = appendPatch super.encoding ./patches/encoding-Cabal-2.0.patch;
 
+  # According to <https://github.com/peti/jailbreak-cabal/blob/master/Main.hs#L24>,
+  # jailbreak won't work on conditional statements. This is why we need manual patching.
+  diagrams-builder = overrideCabal super.diagrams-builder (drv: {
+    postPatch = (drv.postPatch or "") + ''
+      sed -i -E \
+        -e 's#(lens >= [\.0-9]+) && < [\.0-9]+#\1#g' \
+        -e 's#(base-orphans >= [\.0-9]+) && < [\.0-9]+#\1#g' \
+        diagrams-builder.cabal
+    '';
+  });
+
+  pipes-group = doJailbreak (dontCheck super.pipes-group);
+  pipes-transduce = doJailbreak (dontCheck super.pipes-transduce);
+  diagrams-postscript = doJailbreak super.diagrams-postscript;
+  diagrams-svg = doJailbreak super.diagrams-svg;
+  diagrams-rasterific = doJailbreak super.diagrams-rasterific;
+  diagrams-cairo = doJailbreak super.diagrams-cairo;
+
 }
 
 //
