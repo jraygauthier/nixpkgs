@@ -1,28 +1,29 @@
 { stdenv, cmake, ninja, intltool, fetchurl, libxml2, webkitgtk, highlight
-, pkgconfig, gtk3, glib, libnotify, gtkspell3
+, pkgconfig, at-spi2-core, dbus, epoxy, gtk3, glib, libnotify, libpthreadstubs, libXdmcp, libxkbcommon, gtkspell3
 , wrapGAppsHook, itstool, shared-mime-info, libical, db, gcr, sqlite
 , gnome3, librsvg, gdk_pixbuf, libsecret, nss, nspr, icu
-, libcanberra-gtk3, bogofilter, gst_all_1, procps, p11-kit, openldap }:
+, libcanberra-gtk3, bogofilter, gst_all_1, pcre, procps, p11-kit, openldap }:
 
 let
-  version = "3.28.1";
+  version = "3.28.5";
 in stdenv.mkDerivation rec {
   name = "evolution-${version}";
 
   src = fetchurl {
     url = "mirror://gnome/sources/evolution/${gnome3.versionBranch version}/${name}.tar.xz";
-    sha256 = "0sdv5lg2vlz5f4raymz9d8a5jq4j18vbqyigaip6508p3bjnfj8l";
+    sha256 = "1q1nfga39f44knrcvcxk8ivhl6fvg92g71cq3hcp4a7krb3jwa5v";
   };
 
   propagatedUserEnvPkgs = [ gnome3.evolution-data-server ];
 
   buildInputs = [
-    gtk3 glib gdk_pixbuf gnome3.defaultIconTheme librsvg db icu
+    at-spi2-core dbus epoxy gtk3 glib gdk_pixbuf gnome3.defaultIconTheme librsvg db icu
     gnome3.evolution-data-server libsecret libical gcr
     webkitgtk shared-mime-info gnome3.gnome-desktop gtkspell3
     libcanberra-gtk3 bogofilter gnome3.libgdata sqlite
     gst_all_1.gstreamer gst_all_1.gst-plugins-base p11-kit
-    nss nspr libnotify procps highlight gnome3.libgweather
+    nss nspr libnotify libpthreadstubs libXdmcp libxkbcommon pcre procps highlight
+    gnome3.libgweather
     gnome3.gsettings-desktop-schemas
     gnome3.glib-networking openldap
   ];
@@ -35,6 +36,10 @@ in stdenv.mkDerivation rec {
     "-DENABLE_YTNEF=OFF"
     "-DENABLE_PST_IMPORT=OFF"
   ];
+
+  preFixup = ''
+    gappsWrapperArgs+=(--prefix GIO_EXTRA_MODULES : "${gnome3.glib-networking.out}/lib/gio/modules")
+  '';
 
   doCheck = true;
 

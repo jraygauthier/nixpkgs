@@ -5,13 +5,13 @@
 
 stdenv.mkDerivation rec {
   name = "evolution-data-server-${version}";
-  version = "3.28.1";
+  version = "3.28.5";
 
   outputs = [ "out" "dev" ];
 
   src = fetchurl {
     url = "mirror://gnome/sources/evolution-data-server/${gnome3.versionBranch version}/${name}.tar.xz";
-    sha256 = "12b9lfgwd57rzn9394xrbvl9ym5aqldpz9v7c9a421dsv8dgq13b";
+    sha256 = "1247gv0ggwnd1i2n7iglb3crfapx6s9nrl896bzy9k87fb94hlyr";
   };
 
   nativeBuildInputs = [
@@ -21,6 +21,7 @@ stdenv.mkDerivation rec {
     glib libsoup libxml2 gtk gnome-online-accounts
     gcr p11-kit libgweather libgdata libaccounts-glib json-glib
     icu sqlite kerberos openldap webkitgtk
+    glib-networking
   ];
 
   propagatedBuildInputs = [ libsecret nss nspr libical db ];
@@ -40,7 +41,7 @@ stdenv.mkDerivation rec {
     for f in $(find $out/libexec/ -type f -executable); do
       wrapProgram "$f" \
         --prefix XDG_DATA_DIRS : "$GSETTINGS_SCHEMAS_PATH" \
-        --prefix GIO_EXTRA_MODULES : "${stdenv.lib.getLib dconf}/lib/gio/modules"
+        --prefix GIO_EXTRA_MODULES : "${stdenv.lib.getLib dconf}/lib/gio/modules:${gnome3.glib-networking.out}/lib/gio/modules"
     done
   '';
 
