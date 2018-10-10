@@ -12338,6 +12338,8 @@ with pkgs;
 
   gofish = callPackage ../servers/gopher/gofish { };
 
+  guacamole = callPackage ../servers/guacamole { pango = gnome2.pango; };
+
   grafana = callPackage ../servers/monitoring/grafana { };
 
   h2o = callPackage ../servers/http/h2o { };
