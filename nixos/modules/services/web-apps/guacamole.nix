@@ -12,6 +12,23 @@ let
     url = "mirror://sourceforge/guacamole/guacamole-${guacamole_version}.war";
     sha256 = "0kfr4g5nw0hl2wbxycvvy3h3avqk2k0q7xh0vlclk63a19rdjcc8";
   };
+
+  guacamole-tomcat-webapp-dir = pkgs.stdenv.mkDerivation {
+    name = "guacamole-tomcat-webapp-dir";
+    buildCommand = ''
+      mkdir -p "$out/webapps"
+      install -T "${guacamole-client}" "$out/webapps/guacamole.war"
+    '';
+  };
+
+  guacamole-tomcat-common-lib-dir = pkgs.stdenv.mkDerivation {
+    name = "guacamole-tomcat-webapp-dir";
+    buildCommand = ''
+      mkdir -p "$out/lib"
+      install -T "${pkgs.postgresql_jdbc}/share/java/postgresql.jar" "$out/lib/postgresql-jdbc.jar"
+    '';
+  };
+
   guacamole-server = pkgs.guacamole;
   guacamole_auth = builtins.fetchTarball {
     url = "http://apache.org/dyn/closer.cgi?action=download&filename=guacamole/${guacamole_version}/binary/guacamole-auth-jdbc-${guacamole_version}.tar.gz";
@@ -43,16 +60,21 @@ in
       guacamole_properties = mkOption {
         description = "guacamole.properties in the docs";
         default = ''
+          # Basic Authentication provider class. Will use postgres if unspecified and
+          # fail if not properly configured. You will need to remove any of the
+          # below 'postgresql' options below for it to work.
+          auth-provider: net.sourceforge.guacamole.net.basic.BasicFileAuthenticationProvider
+
           guacd-hostname: localhost
           guacd-port: 4822
           enable-websocket: true
-          postgresql-hostname: localhost
-          postgresql-port: 5432
-          postgresql-database: guacamole_db
-          postgresql-username: guacamole_user
-          postgresql-password: changeme
-          postgresql-default-max-connections: 1
-          postgresql-default-max-group-connections: 1
+          #postgresql-hostname: localhost
+          #postgresql-port: 5432
+          #postgresql-database: guacamole_db
+          #postgresql-username: guacamole_user
+          #postgresql-password: changeme
+          #postgresql-default-max-connections: 1
+          #postgresql-default-max-group-connections: 1
         '';
         type = types.str;
       };
@@ -62,19 +84,18 @@ in
         default = ''
 <user-mapping>
     <authorize username="user"
-        password="pppppppppppppppppppppppppppppp"
-        encoding="md5">
+        password="pw">
 	    <connection name="example.com">
             <protocol>ssh</protocol>
-            <param name="username">user</param>
+            <param name="username">root</param>
             <param name="hostname">localhost</param>
             <param name="port">22</param>
         </connection>
         <connection name="another">
             <protocol>rdp</protocol>
             <param name="security">any</param>
-            <param name="username">user</param>
-            <param name="hostname">somewhere</param>
+            <param name="username">root</param>
+            <param name="hostname">localhost</param>
             <param name="port">3389</param>
         </connection>
     </authorize>
@@ -87,7 +108,10 @@ in
 
   config = mkIf cfg.enable {
 
-    systemd.services.guacd = 
+    environment.etc."guacamole/user_mapping.xml".text = cfg.user_mapping;
+    environment.etc."guacamole/guacamole.properties".text = cfg.guacamole_properties;
+
+    systemd.services.guacd =
       let
         user-mapping = builtins.toFile "user_mapping.xml" cfg.user_mapping;
         guacamole-properties = builtins.toFile "guacamole.properties" cfg.guacamole_properties;
@@ -103,12 +127,13 @@ in
         ExecStartPre = pkgs.writeScript "guacd-prestart.sh" ''
             #!/bin/sh
             set -x
-            ln -snfL ./${guacamole_path_suffix} ${guac_path}
+            #ln -snfL ./${guacamole_path_suffix} ${guac_path}
+            mkdir -p ${guac_path}
             ln -snfL ${user-mapping} ${guac_path}/user-mapping.xml
             ln -snfL ${guacamole-properties} ${guac_path}/guacamole.properties
             mkdir -p ${guac_path}/extensions
             ln -snfL ${guacamole_auth}/postgresql/guacamole-auth-jdbc-postgresql-${guacamole_version}.jar ${guac_path}/extensions/guacamole-auth-jdbc-postgresql-${guacamole_version}.jar
-            chown ${config.services.tomcat.user}.${config.services.tomcat.group} ${guac_path} -R
+            chown ${config.services.tomcat.user}:${config.services.tomcat.group} ${guac_path} -R
         '';
         ExecStart = "${guacamole-server}/bin/guacd -f -L debug";
         Restart = "on-failure";
@@ -119,8 +144,8 @@ in
 
     services.tomcat = {
       enable = true;
-      webapps = [ guacamole-client ];
-      commonLibs = [ "${pkgs.postgresql_jdbc}/share/java/postgresql-jdbc.jar" ];
+      webapps = [ guacamole-tomcat-webapp-dir ];
+      commonLibs = [ guacamole-tomcat-common-lib-dir ];
     };
     systemd.services.tomcat.serviceConfig.Environment = ["GUACAMOLE_HOME=${guac_path}" ];
 
