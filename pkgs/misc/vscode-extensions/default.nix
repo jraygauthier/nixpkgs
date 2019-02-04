@@ -25,7 +25,9 @@ rec {
 
   ms-vscode.cpptools = callPackage ./cpptools {};
 
-  ms-python.python = callPackage ./python {};
+  ms-python.python = callPackage ./python {
+    extractNuGet = callPackage ./python/extract-nuget.nix { };
+  };
 
   WakaTime.vscode-wakatime = callPackage ./wakatime {};
 }
