@@ -19,14 +19,14 @@
 
 stdenv.mkDerivation rec {
   pname = "tiscamera";
-  version = "0.11.1";
+  version = "unstable-20190627";
   name = "${pname}-${version}";
 
   src = fetchFromGitHub {
     owner = "TheImagingSource";
     repo = pname;
-    rev = "v-tiscamera-${version}";
-    sha256 = "07vp6khgl6qd3a4519dmx1s5bfw7pld793p50pjn29fqh91fm93g";
+    rev = "b454a8bb06dbcb9e3d3434a03a72d3d2fa44c11e";
+    sha256 = "1b21z0w6b9cb58xbk0sqahznb7flhshbn227j1kmhckb9vw7g2jn";
   };
 
   nativeBuildInputs = [
@@ -61,8 +61,6 @@ stdenv.mkDerivation rec {
 
 
   patches = [
-    # ./p-0001-v4l2-fix-pipe-file-descriptor-handling.patch
-    # ./p-0002-gst-do-not-call-src_stop-when-not-running.patch
     ./p-0003-comment-out-a-line-that-segfaults-the-app.patch
   ];
 
@@ -88,6 +86,7 @@ stdenv.mkDerivation rec {
       "-DTCAM_INSTALL_GIR=$out/share/gir-1.0"
       "-DTCAM_INSTALL_TYPELIB=$out/lib/girepository-1.0"
       "-DTCAM_INSTALL_SYSTEMD=$out/etc/systemd/system"
+      "-DTCAM_INSTALL_PYTHON3_MODULES=$out/lib/${python3.libPrefix}/site-packages"
     )
   '';
 
@@ -97,6 +96,10 @@ stdenv.mkDerivation rec {
   # that, we set the dynamic linker's path to point on the build time location of the library.
   preBuild = ''
     export LD_LIBRARY_PATH=$PWD/src:$LD_LIBRARY_PATH
+  '';
+
+  preInstall = ''
+    mkdir -p "$out/lib/${python3.libPrefix}/site-packages"
   '';
 
   meta = with lib; {

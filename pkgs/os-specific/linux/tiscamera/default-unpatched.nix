@@ -63,7 +63,7 @@ stdenv.mkDerivation rec {
   patches = [
     # ./p-0001-v4l2-fix-pipe-file-descriptor-handling.patch
     # ./p-0002-gst-do-not-call-src_stop-when-not-running.patch
-    ./p-0003-comment-out-a-line-that-segfaults-the-app.patch
+    # ./p-0003-comment-out-a-line-that-segfaults-the-app.patch
   ];
 
   postPatch = ''
