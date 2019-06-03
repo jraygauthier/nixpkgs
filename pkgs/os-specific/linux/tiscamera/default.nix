@@ -3,26 +3,30 @@
 , fetchFromGitHub
 , cmake
 , pkgconfig
-, pcre
-, tinyxml
-, libusb1
-, libzip
+, bash
 , glib
 , gobject-introspection
 , gst_all_1
-, libwebcam
+, libunwind
+, libusb1
+, libuuid
+, libzip
+, orc
+, pcre
+, python3
+, tinyxml
 }:
 
 stdenv.mkDerivation rec {
   pname = "tiscamera";
-  version = "0.9.1";
+  version = "0.11.1";
   name = "${pname}-${version}";
 
   src = fetchFromGitHub {
     owner = "TheImagingSource";
     repo = pname;
     rev = "v-${name}";
-    sha256 = "143yp6bpzj3rqfnrcnlrcwggay37fg6rkphh4w9y9v7v4wllzf87";
+    sha256 = "07vp6khgl6qd3a4519dmx1s5bfw7pld793p50pjn29fqh91fm93g";
   };
 
   nativeBuildInputs = [
@@ -31,15 +35,19 @@ stdenv.mkDerivation rec {
   ];
 
   buildInputs = [
-    pcre
-    tinyxml
-    libusb1
-    libzip
+    bash
     glib
     gobject-introspection
-    gst_all_1.gstreamer
     gst_all_1.gst-plugins-base
-    libwebcam
+    gst_all_1.gstreamer
+    libunwind
+    libusb1
+    libuuid
+    libzip
+    orc
+    pcre
+    python3
+    tinyxml
   ];
 
 
@@ -53,13 +61,13 @@ stdenv.mkDerivation rec {
 
 
   patches = [
-    ./allow-pipeline-stop-in-trigger-mode.patch # To be removed next release.
   ];
 
   postPatch = ''
-    substituteInPlace ./data/udev/80-theimagingsource-cameras.rules \
-      --replace "/usr/bin/uvcdynctrl" "${libwebcam}/bin/uvcdynctrl" \
-      --replace "/path/to/tiscamera/uvc-extensions" "$out/share/uvcdynctrl/data/199e"
+    substituteInPlace ./data/udev/80-theimagingsource-cameras.rules.in \
+      --replace "/bin/sh" "${bash}/bin/sh" \
+      --replace "typically /usr/bin/" "" \
+      --replace "typically /usr/share/theimagingsource/tiscamera/uvc-extension/" ""
 
     substituteInPlace ./src/BackendLoader.cpp \
       --replace '"libtcam-v4l2.so"' "\"$out/lib/tcam-0/libtcam-v4l2.so\"" \
