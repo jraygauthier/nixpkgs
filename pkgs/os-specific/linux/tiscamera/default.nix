@@ -23,10 +23,10 @@ stdenv.mkDerivation rec {
   name = "${pname}-${version}";
 
   src = fetchFromGitHub {
-    owner = "TheImagingSource";
+    owner = "jraygauthier";
     repo = pname;
-    rev = "v-${name}";
-    sha256 = "07vp6khgl6qd3a4519dmx1s5bfw7pld793p50pjn29fqh91fm93g";
+    rev = "9ec6cd7d59d68efdc2602528e5c7b2e248bd0ba1";
+    sha256 = "0ydxrivd7pcgv01wcakds0p9v2k0c4as956vwklpi33l88yp500d";
   };
 
   nativeBuildInputs = [
