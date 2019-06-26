@@ -1,0 +1,28 @@
+From 28d8190b10e342da87a8e808f73130ad92fd4f87 Mon Sep 17 00:00:00 2001
+From: Edgar Thier <edgar.thier@theimagingsource.com>
+Date: Tue, 11 Jun 2019 12:37:39 +0200
+Subject: [PATCH] gst: Do not call src_stop when not running
+
+---
+ src/gstreamer-1.0/gsttcamsrc.cpp | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/src/gstreamer-1.0/gsttcamsrc.cpp b/src/gstreamer-1.0/gsttcamsrc.cpp
+index 822f08c..a1a023d 100644
+--- a/src/gstreamer-1.0/gsttcamsrc.cpp
++++ b/src/gstreamer-1.0/gsttcamsrc.cpp
+@@ -1231,6 +1231,11 @@ static gboolean gst_tcam_src_stop (GstBaseSrc* src)
+ {
+     GstTcamSrc* self = GST_TCAM_SRC(src);
+ 
++    if (!self->is_running)
++    {
++        return FALSE;
++    }
++
+     self->is_running = FALSE;
+ 
+     self->cv.notify_all();
+-- 
+2.19.2
+

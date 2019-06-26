@@ -23,10 +23,10 @@ stdenv.mkDerivation rec {
   name = "${pname}-${version}";
 
   src = fetchFromGitHub {
-    owner = "jraygauthier";
+    owner = "TheImagingSource";
     repo = pname;
-    rev = "9ec6cd7d59d68efdc2602528e5c7b2e248bd0ba1";
-    sha256 = "0ydxrivd7pcgv01wcakds0p9v2k0c4as956vwklpi33l88yp500d";
+    rev = "v-tiscamera-${version}";
+    sha256 = "07vp6khgl6qd3a4519dmx1s5bfw7pld793p50pjn29fqh91fm93g";
   };
 
   nativeBuildInputs = [
@@ -61,6 +61,9 @@ stdenv.mkDerivation rec {
 
 
   patches = [
+    ./p-0001-v4l2-fix-pipe-file-descriptor-handling.patch
+    ./p-0002-gst-do-not-call-src_stop-when-not-running.patch
+    ./p-0003-comment-out-a-line-that-segfaults-the-app.patch
   ];
 
   postPatch = ''

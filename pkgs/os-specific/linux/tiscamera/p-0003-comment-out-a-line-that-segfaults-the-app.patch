@@ -1,0 +1,27 @@
+From 9ec6cd7d59d68efdc2602528e5c7b2e248bd0ba1 Mon Sep 17 00:00:00 2001
+From: Raymond Gauthier <jraygauthier@gmail.com>
+Date: Thu, 6 Jun 2019 17:08:49 -0400
+Subject: [PATCH] Comment out a line that segfaults the app
+
+Segfault occurring as soon as log level reach `TCAM_LOG=WARNING`.
+---
+ src/v4l2/v4l2_utils.cpp | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/src/v4l2/v4l2_utils.cpp b/src/v4l2/v4l2_utils.cpp
+index d2cb407..ecb1c8c 100644
+--- a/src/v4l2/v4l2_utils.cpp
++++ b/src/v4l2/v4l2_utils.cpp
+@@ -142,7 +142,8 @@ std::shared_ptr<Property> tcam::create_property (int fd,
+ 
+     if (ctrl_m.id == TCAM_PROPERTY_INVALID)
+     {
+-        tcam_log(TCAM_LOG_WARNING, "Unable to find std property. Passing raw property identifier through. '%s'(%x)", (char*)queryctrl->name, queryctrl->id);
++        // PATCH: This line segfaults as soon as log level reaches `TCAM_LOG=WARNING`.
++        // tcam_log(TCAM_LOG_WARNING, "Unable to find std property. Passing raw property identifier through. '%s'(%x)", (char*)queryctrl->name, queryctrl->id);
+         // pass through and do not associate with anything existing
+         type_to_use = value_type_to_ctrl_type(type);
+         memcpy(cp.name, (char*)queryctrl->name, sizeof(cp.name));
+-- 
+2.19.2
+
