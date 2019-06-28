@@ -12931,9 +12931,13 @@ in
 
   tiscamera = callPackage ../os-specific/linux/tiscamera { };
 
+  tiscamera-unpatched = callPackage ../os-specific/linux/tiscamera/default-unpatched.nix { };
+
   tiscamera-0_9 = callPackage ../os-specific/linux/tiscamera/0.9.nix { };
 
   tiscamera-unstable = callPackage ../os-specific/linux/tiscamera/unstable.nix { };
+
+  tiscamera-unstable-unpatched = callPackage ../os-specific/linux/tiscamera/unstable-unpatched.nix { };
 
   tivodecode = callPackage ../applications/video/tivodecode { };
 
