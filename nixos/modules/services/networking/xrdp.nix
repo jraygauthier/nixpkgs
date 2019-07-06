@@ -115,7 +115,7 @@ in
           Allow one to add some extra keymap files. Useful for machines with
           non english keymaps. Those files are generated using the
           <literal>/my/xrdp/prefix/sbin/xrdp-genkeymap</literal> utility. More info at:
-          <url>https://www.mankier.com/8/xrdp-genkeymap</url>.
+          <literal>https://www.mankier.com/8/xrdp-genkeymap</literal>.
         '';
       };
 
