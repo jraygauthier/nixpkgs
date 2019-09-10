@@ -2,9 +2,11 @@
 , stdenv
 , substituteAll
 , aspellWithDicts
-, at-spi2-core ? null
+, atk
+, at-spi2-core
 , atspiSupport ? true
 , bash
+, gdk_pixbuf
 , glib
 , glibcLocales
 , gnome3
@@ -19,7 +21,10 @@
 , libcanberra-gtk3
 , mousetweaks
 , udev
+, librsvg
 , libxkbcommon
+, ncurses
+, pango
 , pkgconfig
 , procps
 , python3
@@ -67,8 +72,6 @@ python3.pkgs.buildPythonApplication rec {
     bash
     glib
     gnome3.dconf
-    gsettings-desktop-schemas
-    gtk3
     hunspell
     isocodes
     libcanberra-gtk3
@@ -77,6 +80,16 @@ python3.pkgs.buildPythonApplication rec {
     udev
     xorg.libXtst
     xorg.libxkbfile
+
+    # `GI_TYPELIB_PATH` and `XDG_DATA_DIRS` via `wrapGAppsHook`.
+    atk
+    gobject-introspection
+    gtk3
+    gsettings-desktop-schemas
+    gdk_pixbuf
+    librsvg
+    pango
+
   ] ++ stdenv.lib.optional atspiSupport at-spi2-core;
 
   propagatedBuildInputs = with python3.pkgs; [
@@ -86,6 +99,8 @@ python3.pkgs.buildPythonApplication rec {
     pycairo
     pygobject3
     systemd
+
+    ncurses # tput runtime dep
   ];
 
   propagatedUserEnvPkgs = [
@@ -158,6 +173,9 @@ python3.pkgs.buildPythonApplication rec {
     # killall is dangerous on non-gnu platforms. Use pkill instead.
     substituteInPlace  ./setup.py \
       --replace '"killall",' '"${procps}/bin/pkill", "-x",'
+
+    substituteInPlace ./Onboard/utils.py \
+      --replace '"tput "' '"${ncurses}/bin/tput "'
   '';
 
   installPhase = ''
