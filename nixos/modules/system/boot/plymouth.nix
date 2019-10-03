@@ -10,8 +10,10 @@ let
   cfg = config.boot.plymouth;
 
   nixosBreezePlymouth = pkgs.breeze-plymouth.override {
-    osVersion = config.system.nixos.release;
     logoFile = cfg.logo;
+    logoName = "nixos";
+    osName = "NixOS";
+    osVersion = config.system.nixos.release;
   };
 
   themesEnv = pkgs.buildEnv {
