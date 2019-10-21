@@ -1,0 +1,26 @@
+From 6b11c25e6c3a166668f78eef67b76a97fb865f4d Mon Sep 17 00:00:00 2001
+From: "Mathieu A.-Tetreault" <alexandretm@amotus.ca>
+Date: Fri, 18 Oct 2019 10:30:11 -0400
+Subject: [PATCH] Change default screen orientation to COUNTER_CLOCKWISE(Left
+ Side Up)
+
+---
+ src/plugins/renderers/drm/plugin.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/plugins/renderers/drm/plugin.c b/src/plugins/renderers/drm/plugin.c
+index 1ff2b29..9d57899 100644
+--- a/src/plugins/renderers/drm/plugin.c
++++ b/src/plugins/renderers/drm/plugin.c
+@@ -438,7 +438,7 @@ ply_renderer_connector_get_rotation_and_tiled (ply_renderer_backend_t      *back
+         drmModePropertyPtr prop;
+         int i;
+ 
+-        *rotation = PLY_PIXEL_BUFFER_ROTATE_UPRIGHT;
++        *rotation = PLY_PIXEL_BUFFER_ROTATE_COUNTER_CLOCKWISE;
+         *tiled = false;
+ 
+         for (i = 0; i < connector->count_props; i++) {
+-- 
+2.23.0
+

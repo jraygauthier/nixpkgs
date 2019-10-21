@@ -1,4 +1,4 @@
-{ stdenv, fetchurl, autoreconfHook, pkgconfig, libxslt, docbook_xsl
+{ stdenv, fetchurl, fetchpatch, autoreconfHook, pkgconfig, libxslt, docbook_xsl
 , gtk3, udev, systemd
 }:
 
@@ -17,6 +17,10 @@ stdenv.mkDerivation rec {
 
   buildInputs = [
     gtk3 udev systemd
+  ];
+
+  patches = [
+    ./patch/0001-Change-default-screen-orientation-to-COUNTER_CLOCKWI.patch
   ];
 
   postPatch = ''
