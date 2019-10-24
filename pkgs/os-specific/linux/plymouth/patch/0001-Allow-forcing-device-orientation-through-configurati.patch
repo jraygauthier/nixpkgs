@@ -1,0 +1,134 @@
+From 63dbd0f0bc330a6b50d85ca70c2829175dc091c9 Mon Sep 17 00:00:00 2001
+From: "Mathieu A.-Tetreault" <alexandretm@amotus.ca>
+Date: Fri, 18 Oct 2019 10:30:11 -0400
+Subject: [PATCH] Allow forcing device orientation through configuration file
+
+---
+ src/libply/ply-utils.c             | 14 ++++++++++++++
+ src/libply/ply-utils.h             |  2 ++
+ src/main.c                         | 24 ++++++++++++++++++++++++
+ src/plugins/renderers/drm/plugin.c |  2 +-
+ 4 files changed, 41 insertions(+), 1 deletion(-)
+
+diff --git a/src/libply/ply-utils.c b/src/libply/ply-utils.c
+index c17e0c8..052e375 100644
+--- a/src/libply/ply-utils.c
++++ b/src/libply/ply-utils.c
+@@ -80,6 +80,7 @@ static int errno_stack[PLY_ERRNO_STACK_SIZE];
+ static int errno_stack_position = 0;
+ 
+ static int overridden_device_scale = 0;
++static int overridden_device_orientation = 0;
+ 
+ static char kernel_command_line[PLY_MAX_COMMAND_LINE_SIZE];
+ static bool kernel_command_line_is_set;
+@@ -973,6 +974,13 @@ ply_set_device_scale (int device_scale)
+     ply_trace ("Device scale is set to %d", device_scale);
+ }
+ 
++void
++ply_set_device_orientation (int device_orientation)
++{
++    overridden_device_orientation = device_orientation;
++    ply_trace ("Device orientation is set to %d", device_orientation);
++}
++
+ /* The minimum resolution at which we turn on a device-scale of 2 */
+ #define HIDPI_LIMIT 192
+ #define HIDPI_MIN_HEIGHT 1200
+@@ -1019,6 +1027,12 @@ ply_get_device_scale (uint32_t width,
+         return device_scale;
+ }
+ 
++int
++ply_get_device_orientation (void)
++{
++        return overridden_device_orientation;
++}
++
+ static const char *
+ ply_get_kernel_command_line (void)
+ {
+diff --git a/src/libply/ply-utils.h b/src/libply/ply-utils.h
+index ae4776e..90bf49f 100644
+--- a/src/libply/ply-utils.h
++++ b/src/libply/ply-utils.h
+@@ -122,11 +122,13 @@ char *ply_get_process_command_line (pid_t pid);
+ pid_t ply_get_process_parent_pid (pid_t pid);
+ 
+ void ply_set_device_scale (int device_scale);
++void ply_set_device_orientation (int device_orientation);
+ 
+ int ply_get_device_scale (uint32_t width,
+                           uint32_t height,
+                           uint32_t width_mm,
+                           uint32_t height_mm);
++int ply_get_device_orientation (void);
+ 
+ const char *ply_kernel_command_line_get_string_after_prefix (const char *prefix);
+ bool ply_kernel_command_line_has_argument (const char *argument);
+diff --git a/src/main.c b/src/main.c
+index ddc1883..3936e1b 100644
+--- a/src/main.c
++++ b/src/main.c
+@@ -54,6 +54,7 @@
+ #include "ply-trigger.h"
+ #include "ply-utils.h"
+ #include "ply-progress.h"
++#include "ply-pixel-buffer.h"
+ 
+ #define BOOT_DURATION_FILE     PLYMOUTH_TIME_DIRECTORY "/boot-duration"
+ #define SHUTDOWN_DURATION_FILE PLYMOUTH_TIME_DIRECTORY "/shutdown-duration"
+@@ -291,6 +292,7 @@ load_settings (state_t    *state,
+         bool settings_loaded = false;
+         char *scale_string = NULL;
+         char *splash_string = NULL;
++        char *orientation_string = NULL;
+ 
+         ply_trace ("Trying to load %s", path);
+         key_file = ply_key_file_new (path);
+@@ -340,6 +342,28 @@ load_settings (state_t    *state,
+                 }
+         }
+ 
++        orientation_string = ply_key_file_get_value (key_file, "Daemon", "DeviceOrientation");
++
++        if (orientation_string != NULL) {
++                int orientation = PLY_PIXEL_BUFFER_ROTATE_UPRIGHT;
++
++                if (strcmp (orientation_string, "UpsideDown") == 0)
++                        orientation = PLY_PIXEL_BUFFER_ROTATE_UPSIDE_DOWN;
++
++                if (strcmp (orientation_string, "LeftSideUp") == 0) {
++                        /* Left side up, rotate counter clockwise to correct */
++                        orientation = PLY_PIXEL_BUFFER_ROTATE_COUNTER_CLOCKWISE;
++                }
++
++                if (strcmp (orientation_string, "RightSideUp") == 0) {
++                        /* Left side up, rotate clockwise to correct */
++                        orientation = PLY_PIXEL_BUFFER_ROTATE_CLOCKWISE;
++                }
++
++                ply_set_device_orientation (orientation);
++                free (orientation_string);
++        }
++
+         scale_string = ply_key_file_get_value (key_file, "Daemon", "DeviceScale");
+ 
+         if (scale_string != NULL) {
+diff --git a/src/plugins/renderers/drm/plugin.c b/src/plugins/renderers/drm/plugin.c
+index 1ff2b29..63e14c1 100644
+--- a/src/plugins/renderers/drm/plugin.c
++++ b/src/plugins/renderers/drm/plugin.c
+@@ -438,7 +438,7 @@ ply_renderer_connector_get_rotation_and_tiled (ply_renderer_backend_t      *back
+         drmModePropertyPtr prop;
+         int i;
+ 
+-        *rotation = PLY_PIXEL_BUFFER_ROTATE_UPRIGHT;
++        *rotation = ply_get_device_orientation();
+         *tiled = false;
+ 
+         for (i = 0; i < connector->count_props; i++) {
+-- 
+2.23.0
+
