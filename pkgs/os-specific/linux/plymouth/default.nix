@@ -19,6 +19,10 @@ stdenv.mkDerivation rec {
     gtk3 udev systemd
   ];
 
+  patches = [
+    ./patch/0001-Allow-forcing-device-orientation-through-configurati.patch
+  ];
+
   postPatch = ''
     sed -i \
       -e "s#\$(\$PKG_CONFIG --variable=systemdsystemunitdir systemd)#$out/etc/systemd/system#g" \
