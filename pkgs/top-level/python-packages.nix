@@ -3237,6 +3237,8 @@ in {
 
   muttils = callPackage ../development/python-modules/muttils { };
 
+  mu-repo = callPackage ../development/python-modules/mu-repo { };
+
   mygpoclient = callPackage ../development/python-modules/mygpoclient { };
 
   mysqlclient = callPackage ../development/python-modules/mysqlclient { };

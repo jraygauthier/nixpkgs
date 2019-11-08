@@ -11855,6 +11855,8 @@ in
 
   muparser = callPackage ../development/libraries/muparser { };
 
+  mu-repo = with python3Packages; toPythonApplication mu-repo;
+
   mygpoclient = pythonPackages.mygpoclient;
 
   mygui = callPackage ../development/libraries/mygui {
