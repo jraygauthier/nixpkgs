@@ -2654,6 +2654,8 @@ in {
 
   glances = callPackage ../development/python-modules/glances { };
 
+  gita = callPackage ../development/python-modules/gita { };
+
   github3_py = callPackage ../development/python-modules/github3_py { };
 
   github-webhook = callPackage ../development/python-modules/github-webhook { };
@@ -3945,6 +3947,7 @@ in {
   pyaml = callPackage ../development/python-modules/pyaml { };
 
   pyyaml = callPackage ../development/python-modules/pyyaml { };
+  pyyaml_5 = callPackage ../development/python-modules/pyyaml/5.nix { };
 
   rabbitpy = callPackage ../development/python-modules/rabbitpy { };
 
