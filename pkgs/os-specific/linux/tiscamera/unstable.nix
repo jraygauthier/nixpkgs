@@ -19,14 +19,14 @@
 
 stdenv.mkDerivation rec {
   pname = "tiscamera";
-  version = "unstable-20190627";
+  version = "unstable-20190719";
   name = "${pname}-${version}";
 
   src = fetchFromGitHub {
     owner = "TheImagingSource";
     repo = pname;
-    rev = "b454a8bb06dbcb9e3d3434a03a72d3d2fa44c11e";
-    sha256 = "1b21z0w6b9cb58xbk0sqahznb7flhshbn227j1kmhckb9vw7g2jn";
+    rev = "2042bba574c2b4280027b041881afae5a9e000d8";
+    sha256 = "1kfh1bsakpm3j9z5p654p8bnwardm4274g6knb6fs57v20a4l9f4";
   };
 
   nativeBuildInputs = [
@@ -57,11 +57,6 @@ stdenv.mkDerivation rec {
     "-DBUILD_TOOLS=ON"
     "-DBUILD_V4L2=ON"
     "-DBUILD_LIBUSB=ON"
-  ];
-
-
-  patches = [
-    ./p-0003-comment-out-a-line-that-segfaults-the-app.patch
   ];
 
   postPatch = ''
