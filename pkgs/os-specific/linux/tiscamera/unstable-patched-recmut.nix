@@ -60,8 +60,6 @@ stdenv.mkDerivation rec {
   ];
 
   patches = [
-    # ./0001-Device-lost-hang-add-some-gst-logs.patch
-    # ./0001-Device-lost-hang-no-more-src-stop-on-device-lost.patch
     ./0001-Device-lost-hang-use-recursive-mutex.patch
   ];
 
