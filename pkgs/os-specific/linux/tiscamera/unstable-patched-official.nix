@@ -60,7 +60,7 @@ stdenv.mkDerivation rec {
   ];
 
   patches = [
-    ./0001-Device-lost-hang-use-recursive-mutex.patch
+    ./0001-Device-lost-hang-official-patch.patch
   ];
 
   postPatch = ''
