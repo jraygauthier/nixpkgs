@@ -20921,6 +20921,8 @@ in
 
   gonic = callPackage ../servers/gonic { };
 
+  gopass-ui = callPackage ../applications/misc/gopass-ui { };
+
   googleearth = callPackage ../applications/misc/googleearth { };
 
   google-chrome = callPackage ../applications/networking/browsers/google-chrome { gconf = gnome2.GConf; };
