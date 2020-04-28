@@ -24020,6 +24020,8 @@ in
 
   gonic = callPackage ../servers/gonic { };
 
+  gopass-ui = callPackage ../applications/misc/gopass-ui { };
+
   googleearth = callPackage ../applications/misc/googleearth { };
 
   googleearth-pro = libsForQt5.callPackage ../applications/misc/googleearth-pro { };
