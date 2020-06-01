@@ -1,0 +1,28 @@
+From 594ae4ddbadb1facba76bdff718a0d1e7a0a0485 Mon Sep 17 00:00:00 2001
+From: Raymond Gauthier <jraygauthier@gmail.com>
+Date: Mon, 1 Jun 2020 16:36:59 -0400
+Subject: [PATCH] Patch 'gstmetatcamstatistics.h' inst. to RO loc.
+
+Was attempting to install the file directly to the gstreamer
+package which is wrong, even more so on nix / nixos.
+
+Intall this file instead to the same location but under the
+current package.
+---
+ src/gstreamer-1.0/CMakeLists.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/gstreamer-1.0/CMakeLists.txt b/src/gstreamer-1.0/CMakeLists.txt
+index 8c875b9e..6c734455 100644
+--- a/src/gstreamer-1.0/CMakeLists.txt
++++ b/src/gstreamer-1.0/CMakeLists.txt
+@@ -98,5 +98,5 @@ install(TARGETS ${PLUGINS}
+   COMPONENT tcam-gstreamer-1)
+ 
+ install(FILES gstmetatcamstatistics.h
+-  DESTINATION "${GSTREAMER_1.0_INCLUDEDIR}"
++  DESTINATION "${CMAKE_INSTALL_PREFIX}/include/gstreamer-1.0"
+   COMPONENT tcam-gstreamer-1)
+-- 
+2.23.0
+

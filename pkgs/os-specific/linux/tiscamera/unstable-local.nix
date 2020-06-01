@@ -22,12 +22,7 @@ stdenv.mkDerivation rec {
   version = "unstable-20190719";
   name = "${pname}-${version}";
 
-  src = fetchFromGitHub {
-    owner = "TheImagingSource";
-    repo = pname;
-    rev = "2042bba574c2b4280027b041881afae5a9e000d8";
-    sha256 = "1kfh1bsakpm3j9z5p654p8bnwardm4274g6knb6fs57v20a4l9f4";
-  };
+  src = ../../../../../tiscamera;
 
   nativeBuildInputs = [
     cmake
@@ -60,7 +55,7 @@ stdenv.mkDerivation rec {
   ];
 
   patches = [
-    ./0001-Device-lost-hang-no-more-src-stop-on-device-lost.patch
+    ./0001-Patch-gstmetatcamstatistics-h-inst-to-ro-loc.patch
   ];
 
   postPatch = ''
@@ -94,7 +89,7 @@ stdenv.mkDerivation rec {
   # dependency on `libtcam` (which itself is built as part of this build). In order to allow
   # that, we set the dynamic linker's path to point on the build time location of the library.
   preBuild = ''
-    export LD_LIBRARY_PATH=$PWD/src:$LD_LIBRARY_PATH
+    export LD_LIBRARY_PATH=$PWD/src:$PWD/src/v4l2:$PWD/src/gobject:$LD_LIBRARY_PATH
   '';
 
   preInstall = ''
