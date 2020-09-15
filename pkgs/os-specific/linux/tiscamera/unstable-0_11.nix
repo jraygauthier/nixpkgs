@@ -101,6 +101,10 @@ stdenv.mkDerivation rec {
     mkdir -p "$out/lib/${python3.libPrefix}/site-packages"
   '';
 
+  postInstall = ''
+    install -m 0755 "./tools/firmware-update/firmware-update" "$out/bin/tiscamera-firmware-update"
+  '';
+
   meta = with lib; {
     description = "The Linux sources and UVC firmwares for The Imaging Source cameras";
     homepage = https://github.com/TheImagingSource/tiscamera;
