@@ -13844,14 +13844,10 @@ in
 
   tinyxml-2 = callPackage ../development/libraries/tinyxml-2 { };
 
-  tiscamera = callPackage ../os-specific/linux/tiscamera { };
-
-  tiscamera-unpatched = callPackage ../os-specific/linux/tiscamera/default-unpatched.nix { };
-
-  tiscamera-0_9 = callPackage ../os-specific/linux/tiscamera/0.9.nix { };
-
-  tiscamera-unstable = callPackage ../os-specific/linux/tiscamera/unstable.nix { };
-  tiscamera-development = callPackage ../os-specific/linux/tiscamera/development.nix { };
+  tiscamera-unstable-0_11 = callPackage ../os-specific/linux/tiscamera/unstable-0_11.nix { };
+  tiscamera-0_12 = callPackage ../os-specific/linux/tiscamera/0.12.nix { };
+  tiscamera-local-unstable = callPackage ../os-specific/linux/tiscamera/unstable-local.nix { };
+  tiscamera = tiscamera-unstable-0_11;
 
   tivodecode = callPackage ../applications/video/tivodecode { };
 

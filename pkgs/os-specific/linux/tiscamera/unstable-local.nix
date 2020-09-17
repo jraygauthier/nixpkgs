@@ -19,15 +19,10 @@
 
 stdenv.mkDerivation rec {
   pname = "tiscamera";
-  version = "0.11.1";
+  version = "unstable-20190719";
   name = "${pname}-${version}";
 
-  src = fetchFromGitHub {
-    owner = "TheImagingSource";
-    repo = pname;
-    rev = "v-tiscamera-${version}";
-    sha256 = "07vp6khgl6qd3a4519dmx1s5bfw7pld793p50pjn29fqh91fm93g";
-  };
+  src = ../../../../../tiscamera;
 
   nativeBuildInputs = [
     cmake
@@ -59,6 +54,10 @@ stdenv.mkDerivation rec {
     "-DBUILD_LIBUSB=ON"
   ];
 
+  patches = [
+    ./0001-Patch-gstmetatcamstatistics-h-inst-to-ro-loc.patch
+  ];
+
   postPatch = ''
     substituteInPlace ./data/udev/80-theimagingsource-cameras.rules.in \
       --replace "/bin/sh" "${bash}/bin/sh" \
@@ -81,6 +80,7 @@ stdenv.mkDerivation rec {
       "-DTCAM_INSTALL_GIR=$out/share/gir-1.0"
       "-DTCAM_INSTALL_TYPELIB=$out/lib/girepository-1.0"
       "-DTCAM_INSTALL_SYSTEMD=$out/etc/systemd/system"
+      "-DTCAM_INSTALL_PYTHON3_MODULES=$out/lib/${python3.libPrefix}/site-packages"
     )
   '';
 
@@ -89,7 +89,11 @@ stdenv.mkDerivation rec {
   # dependency on `libtcam` (which itself is built as part of this build). In order to allow
   # that, we set the dynamic linker's path to point on the build time location of the library.
   preBuild = ''
-    export LD_LIBRARY_PATH=$PWD/src:$LD_LIBRARY_PATH
+    export LD_LIBRARY_PATH=$PWD/src:$PWD/src/v4l2:$PWD/src/gobject:$LD_LIBRARY_PATH
+  '';
+
+  preInstall = ''
+    mkdir -p "$out/lib/${python3.libPrefix}/site-packages"
   '';
 
   meta = with lib; {

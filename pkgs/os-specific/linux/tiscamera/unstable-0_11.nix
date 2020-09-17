@@ -3,26 +3,30 @@
 , fetchFromGitHub
 , cmake
 , pkgconfig
-, pcre
-, tinyxml
-, libusb1
-, libzip
+, bash
 , glib
 , gobject-introspection
 , gst_all_1
-, libwebcam
+, libunwind
+, libusb1
+, libuuid
+, libzip
+, orc
+, pcre
+, python3
+, tinyxml
 }:
 
 stdenv.mkDerivation rec {
   pname = "tiscamera";
-  version = "0.9.1";
+  version = "unstable-20190719";
   name = "${pname}-${version}";
 
   src = fetchFromGitHub {
     owner = "TheImagingSource";
     repo = pname;
-    rev = "v-${name}";
-    sha256 = "143yp6bpzj3rqfnrcnlrcwggay37fg6rkphh4w9y9v7v4wllzf87";
+    rev = "2042bba574c2b4280027b041881afae5a9e000d8";
+    sha256 = "1kfh1bsakpm3j9z5p654p8bnwardm4274g6knb6fs57v20a4l9f4";
   };
 
   nativeBuildInputs = [
@@ -31,15 +35,19 @@ stdenv.mkDerivation rec {
   ];
 
   buildInputs = [
-    pcre
-    tinyxml
-    libusb1
-    libzip
+    bash
     glib
     gobject-introspection
-    gst_all_1.gstreamer
     gst_all_1.gst-plugins-base
-    libwebcam
+    gst_all_1.gstreamer
+    libunwind
+    libusb1
+    libuuid
+    libzip
+    orc
+    pcre
+    python3
+    tinyxml
   ];
 
 
@@ -51,15 +59,15 @@ stdenv.mkDerivation rec {
     "-DBUILD_LIBUSB=ON"
   ];
 
-
   patches = [
-    ./allow-pipeline-stop-in-trigger-mode.patch # To be removed next release.
+    ./0001-Device-lost-hang-official-patch.patch
   ];
 
   postPatch = ''
-    substituteInPlace ./data/udev/80-theimagingsource-cameras.rules \
-      --replace "/usr/bin/uvcdynctrl" "${libwebcam}/bin/uvcdynctrl" \
-      --replace "/path/to/tiscamera/uvc-extensions" "$out/share/uvcdynctrl/data/199e"
+    substituteInPlace ./data/udev/80-theimagingsource-cameras.rules.in \
+      --replace "/bin/sh" "${bash}/bin/sh" \
+      --replace "typically /usr/bin/" "" \
+      --replace "typically /usr/share/theimagingsource/tiscamera/uvc-extension/" ""
 
     substituteInPlace ./src/BackendLoader.cpp \
       --replace '"libtcam-v4l2.so"' "\"$out/lib/tcam-0/libtcam-v4l2.so\"" \
@@ -77,6 +85,7 @@ stdenv.mkDerivation rec {
       "-DTCAM_INSTALL_GIR=$out/share/gir-1.0"
       "-DTCAM_INSTALL_TYPELIB=$out/lib/girepository-1.0"
       "-DTCAM_INSTALL_SYSTEMD=$out/etc/systemd/system"
+      "-DTCAM_INSTALL_PYTHON3_MODULES=$out/lib/${python3.libPrefix}/site-packages"
     )
   '';
 
@@ -86,6 +95,10 @@ stdenv.mkDerivation rec {
   # that, we set the dynamic linker's path to point on the build time location of the library.
   preBuild = ''
     export LD_LIBRARY_PATH=$PWD/src:$LD_LIBRARY_PATH
+  '';
+
+  preInstall = ''
+    mkdir -p "$out/lib/${python3.libPrefix}/site-packages"
   '';
 
   meta = with lib; {
