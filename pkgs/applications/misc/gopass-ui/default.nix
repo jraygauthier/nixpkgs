@@ -8,7 +8,7 @@
 , makeWrapper
 , runCommand
 , writeTextFile
-, electron_7
+, electron_6
 , electron-chromedriver_3 ? null
 , gifsicle
 , jq
@@ -29,7 +29,7 @@
 } @ args:
 
 let
-  electron = electron_7;
+  electron = electron_6;
 
   # Optimize the final space taken by our derivation
   # by feeding electron builder with a tree of symlink

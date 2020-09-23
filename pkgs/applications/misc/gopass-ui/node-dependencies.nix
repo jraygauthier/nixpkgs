@@ -16,7 +16,7 @@ let
     };
   };
 
-  electron = electron_7;
+  electron = electron_6;
   electron-chromedriver = if pkgs ? electron-chromedriver_3
     then electron-chromedriver_3
     else null;
