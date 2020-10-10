@@ -178,6 +178,9 @@ in
     };
   };
 
+  ms-dotnettools.csharp = callPackage ./ms-dotnettools-csharp {};
+
+
   vscodevim.vim = buildVscodeMarketplaceExtension {
     mktplcRef = {
       name = "vim";
