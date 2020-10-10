@@ -66,6 +66,8 @@ in
     extractNuGet = callPackage ./python/extract-nuget.nix { };
   };
 
+  ms-dotnettools.csharp = callPackage ./ms-dotnettools-csharp {};
+
   vscodevim.vim = buildVscodeMarketplaceExtension {
     mktplcRef = {
       name = "vim";
