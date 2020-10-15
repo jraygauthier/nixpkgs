@@ -68,6 +68,8 @@ in
 
   ms-dotnettools.csharp = callPackage ./ms-dotnettools-csharp {};
 
+  ms-vsliveshare.vsliveshare = callPackage ./ms-vsliveshare-vsliveshare {};
+
   vscodevim.vim = buildVscodeMarketplaceExtension {
     mktplcRef = {
       name = "vim";
