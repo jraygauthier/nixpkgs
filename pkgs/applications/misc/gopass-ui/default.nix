@@ -69,13 +69,29 @@ stdenv.mkDerivation rec {
     nodejs-12_x
   ];
 
+  /*
+  src = builtins.fetchGit {
+    # url="file:///home/rgauthier/dev/gopass-ui";
+    url=../../../../../gopass-ui;
+  };
+  */
+
+  src = fetchFromGitHub {
+    owner  = "jraygauthier";
+    repo   = "gopass-ui";
+    # ref    = "jrg/v0.7.0_patched";
+    rev    = "b1130e6aca12ada27a3e422759362e2d901087dd";
+    sha256 = "0m46lyv4ih156h978zxyx70yf2v0vfk24d9ykr1hg9yzxb8my1dv";
+  };
+
+  /*
   src = fetchFromGitHub {
     owner  = "codecentric";
     repo   = "gopass-ui";
     rev    = "v${version}";
     sha256 = "1yn8x3raj8hqc6jshqdbn6yfkh6qmp2j5i6b3xz8q02xyvb1r241";
   };
-
+  */
   nodeDeps = (import ./node-dependencies.nix {
       inherit system;
       pkgs = args // { inherit electron-chromedriver_3; };
