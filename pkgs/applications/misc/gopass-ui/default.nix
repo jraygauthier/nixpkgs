@@ -71,17 +71,20 @@ stdenv.mkDerivation rec {
 
   /*
   src = builtins.fetchGit {
+    # name = "source";
     # url="file:///home/rgauthier/dev/gopass-ui";
     url=../../../../../gopass-ui;
+    # sha256 = "0m46lyv4ih156h978zxyx70yf2v0vfk24d9ykr1hg9yzxb8my1dv";
   };
   */
 
   src = fetchFromGitHub {
+    name = "source";
     owner  = "jraygauthier";
     repo   = "gopass-ui";
     # ref    = "jrg/v0.7.0_patched";
-    rev    = "b1130e6aca12ada27a3e422759362e2d901087dd";
-    sha256 = "0m46lyv4ih156h978zxyx70yf2v0vfk24d9ykr1hg9yzxb8my1dv";
+    rev    = "11589f5a0badbf4a35334dc66a34f59b1ee98d9c";
+    sha256 = "1q3d5y0wp8316fb3xgaqm489v3063jkn50w9vd0svf5n8kpfb9bx";
   };
 
   /*
