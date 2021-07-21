@@ -75,6 +75,13 @@ in vscode-utils.buildVscodeMarketplaceExtension rec {
     # Patch `packages.json` so that nix's *ctags* is used as default value for `python.workspaceSymbols.ctagsPath`.
     substituteInPlace "./package.json" \
       --replace "\"default\": \"ctags\"" "\"default\": \"${ctagsDefaultsTo}\""
+
+    # Patch broken attempt to write our debug log to extension
+    # dir (which is in nix store) by instead writing to the
+    # temp dir.
+    sed -i \
+      -E -e 's/(createWriteStream\([a-zA-Z0-9_]+\.join\()[a-zA-Z0-9_]+\.EXTENSION_ROOT_DIR/\1require\("os"\).tmpdir\(\)/g' \
+      "$PWD/out/client/extension.js"
   '';
 
   postInstall = ''
