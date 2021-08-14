@@ -103,7 +103,7 @@ stdenv.mkDerivation rec {
 
   buildInputs = [
     electron
-  ] ++ stdenv.lib.optionals stdenv.isDarwin [ xcbuild darwin.DarwinTools ];
+  ] ++ lib.optionals stdenv.isDarwin [ xcbuild darwin.DarwinTools ];
 
   buildPhase = ''
     dev_node_modules="${nodeDeps}/lib/node_modules/${pname}/node_modules"

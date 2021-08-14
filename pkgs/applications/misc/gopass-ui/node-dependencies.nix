@@ -11,7 +11,7 @@ let
     nodejs = nodejs-12_x;
     pkgs = {
       inherit fetchurl fetchgit;
-      inherit stdenv python2 utillinux runCommand writeTextFile;
+      inherit stdenv lib python2 utillinux runCommand writeTextFile;
       inherit darwin;
     };
   };
@@ -42,7 +42,7 @@ let
   buildInputs = [
     # Patching various `package.json` files.
     jq
-  ] ++ stdenv.lib.optionals stdenv.isDarwin [
+  ] ++ lib.optionals stdenv.isDarwin [
     xcbuild darwin.DarwinTools
     darwin.apple_sdk.frameworks.CoreServices
   ];
