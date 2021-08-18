@@ -61,7 +61,7 @@ in
 
 stdenv.mkDerivation rec {
   pname = "gopass-ui";
-  version = "0.7.0";
+  version = "0.8.0";
   name = "${pname}-${version}";
 
   nativeBuildInputs = [
@@ -69,32 +69,13 @@ stdenv.mkDerivation rec {
     nodejs-12_x
   ];
 
-  /*
-  src = builtins.fetchGit {
-    # name = "source";
-    # url="file:///home/rgauthier/dev/gopass-ui";
-    url=../../../../../gopass-ui;
-    # sha256 = "0m46lyv4ih156h978zxyx70yf2v0vfk24d9ykr1hg9yzxb8my1dv";
-  };
-  */
-
-  src = fetchFromGitHub {
-    name = "source";
-    owner  = "jraygauthier";
-    repo   = "gopass-ui";
-    # ref    = "jrg/v0.7.0_patched";
-    rev    = "11589f5a0badbf4a35334dc66a34f59b1ee98d9c";
-    sha256 = "1q3d5y0wp8316fb3xgaqm489v3063jkn50w9vd0svf5n8kpfb9bx";
-  };
-
-  /*
   src = fetchFromGitHub {
     owner  = "codecentric";
     repo   = "gopass-ui";
     rev    = "v${version}";
-    sha256 = "1yn8x3raj8hqc6jshqdbn6yfkh6qmp2j5i6b3xz8q02xyvb1r241";
+    sha256 = "18iwmf89am8jzgpyayzf2qkirynlsgdiciwz18fyys65s2fr13nn";
   };
-  */
+
   nodeDeps = (import ./node-dependencies.nix {
       inherit system;
       pkgs = args // { inherit electron-chromedriver_3; };
