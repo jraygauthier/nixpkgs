@@ -8,7 +8,7 @@ with pkgs;
 let
   nodePackages = import ./node-composition.nix {
     inherit system;
-    nodejs = nodejs-12_x;
+    nodejs = nodejs-14_x;
     pkgs = {
       inherit fetchurl fetchgit;
       inherit stdenv lib python2 utillinux runCommand writeTextFile;

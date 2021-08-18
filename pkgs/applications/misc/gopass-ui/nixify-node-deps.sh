@@ -33,7 +33,7 @@ chmod u+w "$tmp_pkg_dir/package-lock.json" "$tmp_pkg_dir/package.json"
 
 trap "rm '${tmp_pkg_dir}/package-lock.json' '${tmp_pkg_dir}/package.json'" EXIT
 
-node2nix_args=( --development --nodejs-12 \
+node2nix_args=( --development --nodejs-14 \
   -i "$tmp_pkg_dir/package.json" \
   -l "$tmp_pkg_dir/package-lock.json" \
   --no-copy-node-env \

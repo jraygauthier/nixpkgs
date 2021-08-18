@@ -8,14 +8,14 @@
 , makeWrapper
 , runCommand
 , writeTextFile
-, electron_7
+, electron_12
 , electron-chromedriver_3 ? null
 , gifsicle
 , jq
 , libwebp
 , mozjpeg
 , nix-gitignore
-, nodejs-12_x
+, nodejs-14_x
 , nodePackages
 , optipng
 , p7zip
@@ -29,7 +29,8 @@
 } @ args:
 
 let
-  electron = electron_7;
+  # TODO: Should be 13 but not packaged yet.
+  electron = electron_12;
 
   # Optimize the final space taken by our derivation
   # by feeding electron builder with a tree of symlink
@@ -66,7 +67,7 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [
     makeWrapper
-    nodejs-12_x
+    nodejs-14_x
   ];
 
   src = fetchFromGitHub {
