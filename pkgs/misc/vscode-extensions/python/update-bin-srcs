@@ -1,0 +1,61 @@
+#!/usr/bin/env nix-shell
+#!nix-shell -I nixpkgs=../../../.. -i bash -p curl jq unzip
+set -euf -o pipefail
+
+declare scriptDir
+scriptDir=$(cd "$(dirname "$0")"; pwd)
+1>&2 echo "scriptDir='$scriptDir'"
+
+. "$scriptDir/../_maintainers/update-bin-srcs-lib.sh"
+
+declare extPublisher="ms-python"
+declare extName="python"
+declare defaultExtVersion="2021.9.1246542782"
+declare extVersion="${1:-$defaultExtVersion}"
+
+_formatExtRuntimeDeps() {
+  declare publisher="${1?}"
+  declare name="${2?}"
+  declare version="${3?}"
+
+  declare jsonShaWStorePath
+  jsonShaWStorePath="$(prefetchExtensionJson "$publisher" "$name" "$version")"
+
+  declare jsonStorePath
+  jsonStorePath="$(echo "$jsonShaWStorePath" | tail -n1)"
+  1>&2 echo "jsonStorePath='$jsonStorePath'"
+
+  declare langServerV
+  langServerV="$(cat "$jsonStorePath" | jq -j -e '.languageServerVersion')"
+
+  # Nix's system string.
+  declare langServerSys=( \
+    "x86_64-linux" \
+    "x86_64-darwin" \
+  )
+
+  # The arch tag comes from 'PlatformName' defined here:
+  # https://github.com/Microsoft/vscode-python/blob/master/src/client/activation/types.ts
+  declare -A langServerSysToUrlSysMap=( \
+    [x86_64-linux]="linux-x64" \
+    [x86_64-darwin]="osx-x64" \
+  )
+
+  declare arch
+  for arch in "${langServerSys[@]}"; do
+    declare urlSys
+    urlSys="${langServerSysToUrlSysMap["$arch"]?}"
+    declare langServerName="Python-Language-Server"
+    declare nupkgsUrl="https://pvsc.azureedge.net/python-language-server-stable/${langServerName}-${urlSys}.${langServerV}.nupkg";
+
+    printf '{"%s__%s": {"version": "%s", "urls": ["%s"]}}' \
+      "$langServerName" "$arch" "$langServerV" "$nupkgsUrl"
+  done
+}
+
+_formatExtRuntimeDeps \
+  "$extPublisher" "$extName" "$extVersion" \
+  | computeAndAttachExtRtDepsChecksums \
+  | jqStreamToJson \
+  | tee "$scriptDir/rt-deps-bin-srcs.json" \
+  | jq '.'

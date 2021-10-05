@@ -1,0 +1,16 @@
+{
+  "Python-Language-Server__x86_64-linux": {
+    "version": "0.5.30",
+    "urls": [
+      "https://pvsc.azureedge.net/python-language-server-stable/Python-Language-Server-linux-x64.0.5.30.nupkg"
+    ],
+    "sha256": "1pmj5pb4xylx4gdx4zgmisn0si59qx51n2m1bh7clv29q6biw05n"
+  },
+  "Python-Language-Server__x86_64-darwin": {
+    "version": "0.5.30",
+    "urls": [
+      "https://pvsc.azureedge.net/python-language-server-stable/Python-Language-Server-osx-x64.0.5.30.nupkg"
+    ],
+    "sha256": "0ishiy1z9dghj4ryh95vy8rw0v7q4birdga2zdb4a8am31wmp94b"
+  }
+}

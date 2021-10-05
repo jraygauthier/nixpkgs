@@ -15,39 +15,40 @@ let
   pythonDefaultsTo = if pythonUseFixed then "${python3}/bin/python" else "python";
   ctagsDefaultsTo = if ctagsUseFixed then "${ctags}/bin/ctags" else "ctags";
 
-  # The arch tag comes from 'PlatformName' defined here:
-  # https://github.com/Microsoft/vscode-python/blob/master/src/client/activation/types.ts
-  arch =
-    if stdenv.isLinux && stdenv.isx86_64 then "linux-x64"
-    else if stdenv.isDarwin then "osx-x64"
-    else throw "Only x86_64 Linux and Darwin are supported.";
+  rtDepsSrcsFromJson = builtins.fromJSON (builtins.readFile ./rt-deps-bin-srcs.json);
+  rtDepsBinSrcs = builtins.mapAttrs (k: v:
+      let
+        # E.g: "Python-Language-Server__x86_64-linux"
+        kSplit = builtins.split "(__)" k;
+        name = builtins.elemAt kSplit 0;
+        system = builtins.elemAt kSplit 2;
+      in
+      {
+        inherit name system;
+        inherit (v) version;
+        src = fetchurl {
+          urls = v.urls;
+          inherit (v) sha256;
+        };
+      }
+    )
+    rtDepsSrcsFromJson;
 
-  languageServerSha256 = {
-    linux-x64 = "1pmj5pb4xylx4gdx4zgmisn0si59qx51n2m1bh7clv29q6biw05n";
-    osx-x64 = "0ishiy1z9dghj4ryh95vy8rw0v7q4birdga2zdb4a8am31wmp94b";
-  }.${arch};
+  rtDepBinSrcByName = bSrcName:
+    rtDepsBinSrcs."${bSrcName}__${stdenv.targetPlatform.system}";
 
-  # version is languageServerVersion in the package.json
-  languageServer = extractNuGet rec {
-    name = "Python-Language-Server";
-    version = "0.5.30";
-
-    src = fetchurl {
-      url = "https://pvsc.azureedge.net/python-language-server-stable/${name}-${arch}.${version}.nupkg";
-      sha256 = languageServerSha256;
-    };
-  };
+  languageServer = extractNuGet (rtDepBinSrcByName "Python-Language-Server");
 in vscode-utils.buildVscodeMarketplaceExtension rec {
   mktplcRef = {
     name = "python";
     publisher = "ms-python";
-    version = "2021.5.829140558";
+    version = "2021.9.1246542782";
   };
 
   vsix = fetchurl {
     name = "${mktplcRef.publisher}-${mktplcRef.name}.zip";
     url = "https://github.com/microsoft/vscode-python/releases/download/${mktplcRef.version}/ms-python-release.vsix";
-    sha256 = "0y2HN4WGYUUXBfqp8Xb4oaA0hbLZmE3kDUXMBAOjvPQ=";
+    sha256 = "sha256:105vj20749bck6ijdlf7hsg5nb82bi5pklf80l1s7fn4ajr2yk02";
   };
 
   buildInputs = [
