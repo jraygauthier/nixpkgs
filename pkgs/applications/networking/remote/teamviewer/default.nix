@@ -44,12 +44,10 @@ mkDerivation rec {
     install -d "$out/share/dbus-1/services"
     install -m 644 "$in_script_dir/com.teamviewer.TeamViewer.service" "$out/share/dbus-1/services"
     substituteInPlace "$out/share/dbus-1/services/com.teamviewer.TeamViewer.service" \
-      --replace '/opt/teamviewer/tv_bin/TeamViewer' \
-        "$out/share/teamviewer/tv_bin/TeamViewer"
+      --replace "/opt/teamviewer/tv_bin/TeamViewer" "$out/share/teamviewer/tv_bin/TeamViewer"
     install -m 644 "$in_script_dir/com.teamviewer.TeamViewer.Desktop.service" "$out/share/dbus-1/services"
     substituteInPlace "$out/share/dbus-1/services/com.teamviewer.TeamViewer.Desktop.service" \
-      --replace '/opt/teamviewer/tv_bin/TeamViewer_Desktop' \
-        "$out/share/teamviewer/tv_bin/TeamViewer_Desktop"
+      --replace "/opt/teamviewer/tv_bin/TeamViewer_Desktop" "$out/share/teamviewer/tv_bin/TeamViewer_Desktop"
 
     install -d "$out/share/dbus-1/system.d"
     install -m 644 "$in_script_dir/com.teamviewer.TeamViewer.Daemon.conf" "$out/share/dbus-1/system.d"
@@ -57,8 +55,7 @@ mkDerivation rec {
     install -d "$out/share/polkit-1/actions"
     install -m 644 "$in_script_dir/com.teamviewer.TeamViewer.policy" "$out/share/polkit-1/actions"
     substituteInPlace "$out/share/polkit-1/actions/com.teamviewer.TeamViewer.policy" \
-      --replace '/opt/teamviewer/tv_bin/script/execscript' \
-        "$out/share/teamviewer/tv_bin/script/execscript"
+      --replace "/opt/teamviewer/tv_bin/script/execscript" "$out/share/teamviewer/tv_bin/script/execscript"
 
     for i in 16 20 24 32 48 256; do
       size=$i"x"$i
@@ -93,7 +90,7 @@ mkDerivation rec {
   preferLocalBuild = true;
 
   meta = with lib; {
-    homepage = "http://www.teamviewer.com";
+    homepage = "https://www.teamviewer.com";
     license = licenses.unfree;
     description = "Desktop sharing application, providing remote support and online meetings";
     platforms = [ "x86_64-linux" ];
