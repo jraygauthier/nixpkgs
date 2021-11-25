@@ -587,6 +587,8 @@ in
 
   libredirect = callPackage ../build-support/libredirect { };
 
+  libredirect-self = callPackage ../build-support/libredirect-self { };
+
   madonctl = callPackage ../applications/misc/madonctl { };
 
   maelstrom = callPackage ../games/maelstrom { };
@@ -27202,6 +27204,8 @@ in
   vscode-fhsWithPackages = vscode.fhsWithPackages;
 
   vscode-with-extensions = callPackage ../applications/editors/vscode/with-extensions.nix {};
+
+  vscode-with-system-extensions = callPackage ../applications/editors/vscode/with-system-extensions.nix {};
 
   vscode-utils = callPackage ../misc/vscode-extensions/vscode-utils.nix {};
 
