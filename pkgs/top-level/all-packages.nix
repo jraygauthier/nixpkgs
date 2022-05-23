@@ -16201,6 +16201,8 @@ in
 
   libimobiledevice = callPackage ../development/libraries/libimobiledevice { };
 
+  libimobiledevice-glue = callPackage ../development/libraries/libimobiledevice-glue { };
+
   libindicator-gtk2 = libindicator.override { gtkVersion = "2"; };
   libindicator-gtk3 = libindicator.override { gtkVersion = "3"; };
   libindicator = callPackage ../development/libraries/libindicator { };
