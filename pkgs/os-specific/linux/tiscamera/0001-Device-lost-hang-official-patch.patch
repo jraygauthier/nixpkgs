@@ -1,0 +1,79 @@
+From cb133de28d978616659b04467a3f425c611a7025 Mon Sep 17 00:00:00 2001
+From: Raymond Gauthier <jraygauthier@gmail.com>
+Date: Mon, 24 Feb 2020 07:58:51 -0500
+Subject: [PATCH] Device lost hang: official patch
+
+No longer call `gst_tcam_src_stop` integrally from
+`gst_tcam_src_device_lost_callback`. Instead, performs only the
+essential parts of it so as to properly mirrors real world state which
+should allow the pipeline itself to perform the `gst_tcam_src_stop`
+call.
+
+Also prevent `gst_tcam_src_device_lost_callback` from being
+called **during** device destruction.
+
+As provided by @TIS-Edgar via the following gist:
+https://gist.github.com/TIS-Edgar/ebd6f5039d119909b052c85b55e180c8
+
+Fixes:
+https://github.com/TheImagingSource/tiscamera/issues/288
+---
+ src/gstreamer-1.0/gsttcamsrc.cpp |  6 +++++-
+ src/v4l2/V4l2Device.cpp          | 10 +++++++++-
+ 2 files changed, 14 insertions(+), 2 deletions(-)
+
+diff --git a/src/gstreamer-1.0/gsttcamsrc.cpp b/src/gstreamer-1.0/gsttcamsrc.cpp
+index 5ee4f01..82235bd 100644
+--- a/src/gstreamer-1.0/gsttcamsrc.cpp
++++ b/src/gstreamer-1.0/gsttcamsrc.cpp
+@@ -1064,7 +1064,11 @@ static void gst_tcam_src_device_lost_callback (const struct tcam_device_info* in
+ 
+ #endif
+ 
+-    gst_tcam_src_stop(GST_BASE_SRC(self));
++
++    self->is_running = FALSE;
++    gst_element_send_event(GST_ELEMENT(self), gst_event_new_eos());
++    // gst_tcam_src_stop(GST_BASE_SRC(self));
++
+ }
+ 
+ 
+diff --git a/src/v4l2/V4l2Device.cpp b/src/v4l2/V4l2Device.cpp
+index bc56921..d58b017 100644
+--- a/src/v4l2/V4l2Device.cpp
++++ b/src/v4l2/V4l2Device.cpp
+@@ -94,6 +94,7 @@ V4l2Device::~V4l2Device ()
+     if (is_stream_on)
+         stop_stream();
+ 
++    this->is_stream_on = false;
+     this->stop_all = true;
+     this->abort_all = true;
+     // signal the udev monitor to exit it's poll/select
+@@ -128,6 +129,12 @@ V4l2Device::~V4l2Device ()
+ 
+     if (notification_thread.joinable())
+     {
++        // deactivate device_lost
++        // we simply want to join all thread as
++        // we already are destroying the device
++        this->device_is_lost = false;
++        this->cv.notify_all();
++
+         notification_thread.join();
+     }
+ 
+@@ -578,7 +585,8 @@ void V4l2Device::notification_loop ()
+     while(this->is_stream_on)
+     {
+         std::unique_lock<std::mutex> lck(this->mtx);
+-        this->cv.wait(lck);
++        auto reg_check = std::chrono::microseconds(2);
++        this->cv.wait_for(lck, reg_check);
+ 
+         if (this->device_is_lost)
+         {
+-- 
+2.23.0
+

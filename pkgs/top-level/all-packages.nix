@@ -20860,6 +20860,8 @@ with pkgs;
 
   tiscamera = libsForQt5.callPackage ../os-specific/linux/tiscamera { stdenv = gcc10Stdenv; };
 
+  tiscamera-0_11 = libsForQt5.callPackage ../os-specific/linux/tiscamera/0.11.nix { stdenv = gcc9Stdenv; };
+
   tivodecode = callPackage ../applications/video/tivodecode { };
 
   tix = callPackage ../development/libraries/tix { };
