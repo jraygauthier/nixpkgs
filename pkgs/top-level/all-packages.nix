@@ -13804,7 +13804,9 @@ in
 
   tinyxml-2 = callPackage ../development/libraries/tinyxml-2 { };
 
-  tiscamera = callPackage ../os-specific/linux/tiscamera { };
+  tiscamera = callPackage ../os-specific/linux/tiscamera {
+    sphinx = with python3Packages; toPythonApplication sphinx;
+  };
 
   tivodecode = callPackage ../applications/video/tivodecode { };
 
