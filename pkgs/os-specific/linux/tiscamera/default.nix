@@ -21,6 +21,8 @@
 , catch2
 , libsForQt5
 , withGui ? true
+, withAravis ? true
+, aravis
 }:
 
 with lib;
@@ -34,6 +36,7 @@ stdenv.mkDerivation rec {
     repo = pname;
     rev = "v-${pname}-${version}";
     sha256 = "0hpy9yhc4mn6w8gvzwif703smmcys0j2jqbz2xfghqxcyb0ykplj";
+    fetchSubmodules = true;
   };
 
   postPatch = ''
@@ -71,12 +74,14 @@ stdenv.mkDerivation rec {
     orc
     libuuid
     python3Packages.python
+  ] ++ optionals withAravis [
+    aravis
   ] ++ optionals withGui [
     python3Packages.pyqt5
     libsForQt5.qtbase
   ];
 
-  pythonPath = with python3Packages; [ pyqt5 pygobject3 ];
+  pythonPath = with python3Packages; [ pyqt5 pygobject3 setuptools ];
 
   propagatedBuildInputs = pythonPath;
 
@@ -85,12 +90,13 @@ stdenv.mkDerivation rec {
   ];
 
   cmakeFlags = [
-    "-DBUILD_ARAVIS=OFF" # For GigE support. Won't need it as our camera is usb.
     "-DBUILD_GST_1_0=ON"
     "-DBUILD_TOOLS=ON"
     "-DBUILD_V4L2=ON"
     "-DBUILD_LIBUSB=ON"
     "-DBUILD_TESTS=ON"
+    "-DTCAM_INTERNAL_ARAVIS=OFF"
+    "-DBUILD_ARAVIS=${if withAravis then "ON" else "OFF"}"
     "-DTCAM_BUILD_WITH_GUI=${if withGui then "ON" else "OFF"}"
     "-DTCAM_INSTALL_UDEV=${placeholder "out"}/lib/udev/rules.d"
     "-DTCAM_INSTALL_UVCDYNCTRL=${placeholder "out"}/share/uvcdynctrl/data/199e"
@@ -104,6 +110,9 @@ stdenv.mkDerivation rec {
     # dependency on `libtcam` (which itself is built as part of this build). In order to allow
     # that, we set the dynamic linker's path to point on the build time location of the library.
     "-DCMAKE_SKIP_BUILD_RPATH=OFF"
+  ] ++ optionals withAravis [
+    # "-Daravis_INCLUDE_DIR=${aravis.dev}/include/aravis-0.6"
+    # "-Daravis_LIBRARIES=${aravis.lib}/lib"
   ];
 
   doCheck = true;

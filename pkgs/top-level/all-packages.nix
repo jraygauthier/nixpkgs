@@ -16574,6 +16574,8 @@ with pkgs;
 
   aravis = callPackage ../development/libraries/aravis { };
 
+  aravis-0_6 = callPackage ../development/libraries/aravis/0.6.nix { };
+
   arb = callPackage ../development/libraries/arb {};
 
   argp-standalone = callPackage ../development/libraries/argp-standalone {};
@@ -20889,7 +20891,7 @@ with pkgs;
 
   tinyxml-2 = callPackage ../development/libraries/tinyxml-2 { };
 
-  tiscamera = callPackage ../os-specific/linux/tiscamera { };
+  tiscamera = callPackage ../os-specific/linux/tiscamera { aravis = aravis-0_6; };
 
   tivodecode = callPackage ../applications/video/tivodecode { };
 
