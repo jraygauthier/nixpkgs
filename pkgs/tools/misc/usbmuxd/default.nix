@@ -4,6 +4,7 @@
 , autoreconfHook
 , pkg-config
 , libimobiledevice
+, libimobiledevice-glue
 , libusb1
 }:
 
@@ -25,6 +26,7 @@ stdenv.mkDerivation rec {
 
   propagatedBuildInputs = [
     libimobiledevice
+    libimobiledevice-glue
     libusb1
   ];
 
