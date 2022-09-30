@@ -2649,6 +2649,8 @@ with pkgs;
 
   bdfresize = callPackage ../tools/misc/bdfresize { };
 
+  bcat = callPackage ../tools/text/bcat {};
+
   bcache-tools = callPackage ../tools/filesystems/bcache-tools { };
 
   bchunk = callPackage ../tools/cd-dvd/bchunk { };
